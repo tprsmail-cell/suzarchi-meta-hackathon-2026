@@ -1,0 +1,1463 @@
+import fs from 'fs';
+
+const translationsContent = `export type SupportedLanguage =
+  | 'en'
+  | 'ta'
+  | 'es'
+  | 'hi'
+  | 'zh-CN'
+  | 'zh-TW'
+  | 'vi'
+  | 'de'
+  | 'fr'
+  | 'it';
+
+export interface LanguageMeta {
+  code: SupportedLanguage;
+  nativeName: string;
+  englishName: string;
+  flagEmoji: string;
+}
+
+export const SUPPORTED_LANGUAGES_META: LanguageMeta[] = [
+  { code: 'en', nativeName: 'English', englishName: 'English', flagEmoji: '🌐' },
+  { code: 'ta', nativeName: 'தமிழ்', englishName: 'Tamil', flagEmoji: '🇮🇳' },
+  { code: 'hi', nativeName: 'हिन्दी', englishName: 'Hindi', flagEmoji: '🇮🇳' },
+  { code: 'es', nativeName: 'Español', englishName: 'Spanish', flagEmoji: '🇪🇸' },
+  { code: 'zh-CN', nativeName: '简体中文', englishName: 'Simplified Chinese', flagEmoji: '🇨🇳' },
+  { code: 'zh-TW', nativeName: '繁體中文', englishName: 'Traditional Chinese', flagEmoji: '🇹🇼' },
+  { code: 'vi', nativeName: 'Tiếng Việt', englishName: 'Vietnamese', flagEmoji: '🇻🇳' },
+  { code: 'de', nativeName: 'Deutsch', englishName: 'German', flagEmoji: '🇩🇪' },
+  { code: 'fr', nativeName: 'Français', englishName: 'French', flagEmoji: '🇫🇷' },
+  { code: 'it', nativeName: 'Italiano', englishName: 'Italian', flagEmoji: '🇮🇹' },
+];
+
+export interface TranslationDictionary {
+  brand: {
+    name: string;
+    tamilName: string;
+    tagline: string;
+    subTagline: string;
+  };
+  nav: {
+    dashboard: string;
+    materialPassport: string;
+    postMaterial: string;
+    browseTaxonomy: string;
+    aiMatchAnalysis: string;
+    globalDemand: string;
+    buyerRequests: string;
+    myListings: string;
+    analytics: string;
+    verificationLog: string;
+    circularNetwork: string;
+    documentation: string;
+    settings: string;
+    traceabilityBatches: string;
+    scope3Ghg: string;
+    b2bEscrow: string;
+    recyclerClearinghouse: string;
+    tradeAndRfq: string;
+    impactLca: string;
+  };
+  evidence: {
+    confirmed: string;
+    reported: string;
+    estimated: string;
+    unknown: string;
+    confirmedDesc: string;
+    reportedDesc: string;
+    estimatedDesc: string;
+    unknownDesc: string;
+  };
+  verdicts: {
+    satisfied: string;
+    pendingVerification: string;
+    blocked: string;
+  };
+  actions: {
+    postNewMaterial: string;
+    switchCase: string;
+    viewFullPassport: string;
+    discoverReuseOpportunities: string;
+    uploadImages: string;
+    removeImage: string;
+    saveDraft: string;
+    submitPassport: string;
+    close: string;
+    cancel: string;
+    share: string;
+    save: string;
+    searchPlaceholder: string;
+    viewAll: string;
+    selectLanguage: string;
+    selectMarket: string;
+    clearFilters: string;
+  };
+  metrics: {
+    totalSurplusListed: string;
+    activeDemandSignals: string;
+    highConfidenceMatches: string;
+    co2Mitigation: string;
+    circularConversionRate: string;
+  };
+  heroValues: {
+    reduceWaste: string;
+    createValue: string;
+    supportCircular: string;
+    connectMarkets: string;
+  };
+  units: {
+    metric: string;
+    imperial: string;
+    weight: string;
+    length: string;
+  };
+  categories: {
+    allCategories: string;
+    fabricsAndKnits: string;
+    spinningMill: string;
+    handloomCraft: string;
+    yarnsAndCones: string;
+    institutionalLinens: string;
+    industrialWipers: string;
+    role: string;
+  };
+  dashboard: {
+    roleAdaptiveDashboard: string;
+    roleTailoredQuickActions: string;
+    myListings: string;
+    latestBuyerRequests: string;
+    materialPassportQuickView: string;
+    uploadAndAiExtract: string;
+    metaAiIntake: string;
+    quickSwitchCases: string;
+  };
+  analytics: {
+    title: string;
+    subtitle: string;
+    liveClusterNetwork: string;
+    allRegions: string;
+    asia: string;
+    europe: string;
+    northAmerica: string;
+    southAmerica: string;
+    africa: string;
+    oceania: string;
+    filterByCountry: string;
+    allCountries: string;
+    materialFlowByRegion: string;
+    crossBorderOpportunities: string;
+    localToGlobalPathways: string;
+    verifiedBenchmark: string;
+    demonstrationModel: string;
+    estimatedCapacity: string;
+    underAssessment: string;
+    throughput: string;
+    conversionRate: string;
+    openRecyclerClearinghouse: string;
+    activeJurisdiction: string;
+    tradeCompliance: string;
+  };
+}
+
+export const PROTECTED_BRAND_TERMS = [
+  'SUZARCHI',
+  'One Material. Multiple Possibilities.',
+] as const;
+
+export const TRANSLATIONS: Record<SupportedLanguage, TranslationDictionary> = {
+  en: {
+    brand: {
+      name: 'SUZARCHI',
+      tamilName: 'சுழற்சி',
+      tagline: 'One Material. Multiple Possibilities.',
+      subTagline: 'Connect surplus materials with the right opportunities across industries — with the power of AI.',
+    },
+    nav: {
+      dashboard: 'Dashboard',
+      materialPassport: 'Material Passport',
+      postMaterial: '+ Post a Material',
+      browseTaxonomy: 'Browse Taxonomy',
+      aiMatchAnalysis: 'AI Match Intelligence',
+      globalDemand: 'Global Demand Snapshot',
+      buyerRequests: 'Buyer Inquiries',
+      myListings: 'My Surplus Listings',
+      analytics: 'Circularity Metrics',
+      verificationLog: 'Verification Audits',
+      circularNetwork: 'Regional Recyclers',
+      documentation: 'Platform Documentation',
+      settings: 'Settings & Units',
+      traceabilityBatches: 'Traceability & Batches',
+      scope3Ghg: 'Scope 3 GHG Accounting',
+      b2bEscrow: 'B2B Escrow & Settlement',
+      recyclerClearinghouse: 'Recycler Clearinghouse',
+      tradeAndRfq: 'Trade & RFQ',
+      impactLca: 'Impact & LCA Evidence',
+    },
+    evidence: {
+      confirmed: 'Confirmed',
+      reported: 'Needs Confirmation (Reported)',
+      estimated: 'From label / visual estimate',
+      unknown: 'Unknown / Unspecified',
+      confirmedDesc: 'Independently verified by laboratory testing, mill tags, or scale measurements.',
+      reportedDesc: 'Self-declared by material supplier; pending empirical verification.',
+      estimatedDesc: 'Approximated visually or derived from standard operational assumptions.',
+      unknownDesc: 'Missing technical value; must be checked prior to processing.',
+    },
+    verdicts: {
+      satisfied: 'Satisfied',
+      pendingVerification: 'Pending Verification',
+      blocked: 'Blocked',
+    },
+    actions: {
+      postNewMaterial: 'Post Material to Passport',
+      switchCase: 'Switch Case / Edit',
+      viewFullPassport: 'View Full Passport',
+      discoverReuseOpportunities: 'Discover Reuse Opportunities',
+      uploadImages: 'Upload Photos & Documents',
+      removeImage: 'Remove Photo',
+      saveDraft: 'Save Draft',
+      submitPassport: 'Generate Material Passport',
+      close: 'Close',
+      cancel: 'Cancel',
+      share: 'Share',
+      save: 'Save',
+      searchPlaceholder: 'Search materials, categories, uses...',
+      viewAll: 'View All',
+      selectLanguage: 'Select Display Language',
+      selectMarket: 'Select Operating Market',
+      clearFilters: 'Clear Filters',
+    },
+    metrics: {
+      totalSurplusListed: 'Total Surplus Listed',
+      activeDemandSignals: 'Active Demand Signals',
+      highConfidenceMatches: 'Verified Matches',
+      co2Mitigation: 'CO₂ Mitigation Est.',
+      circularConversionRate: 'Circular Conversion',
+    },
+    heroValues: {
+      reduceWaste: 'Reduce Waste',
+      createValue: 'Create Value',
+      supportCircular: 'Support Circular Economy',
+      connectMarkets: 'Connect Global Markets',
+    },
+    units: {
+      metric: 'Metric (kg, cm, m)',
+      imperial: 'Imperial (lb, in, yd)',
+      weight: 'Weight Units',
+      length: 'Length Units',
+    },
+    categories: {
+      allCategories: 'All Categories',
+      fabricsAndKnits: 'Fabrics & Knits',
+      spinningMill: 'Spinning Mill',
+      handloomCraft: 'Handloom & Craft',
+      yarnsAndCones: 'Yarns & Cones',
+      institutionalLinens: 'Institutional Linens',
+      industrialWipers: 'Industrial Wipers',
+      role: 'Role',
+    },
+    dashboard: {
+      roleAdaptiveDashboard: 'Role-Adaptive Dashboard',
+      roleTailoredQuickActions: 'Role-Tailored Quick Actions',
+      myListings: 'My Listings',
+      latestBuyerRequests: 'Latest Buyer Requests',
+      materialPassportQuickView: 'Material Passport Quick View',
+      uploadAndAiExtract: 'Upload & AI Extract',
+      metaAiIntake: 'Meta AI Intake',
+      quickSwitchCases: 'Pre-configured Lifecycle Cases (Quick Switch):',
+    },
+    analytics: {
+      title: 'Circularity Analytics & Regional Corridor Intelligence',
+      subtitle: 'Empirical Materials Flow Analytics Across Major Global Textile Manufacturing Hubs',
+      liveClusterNetwork: 'Live Global Cluster Network',
+      allRegions: 'All Regions',
+      asia: 'Asia',
+      europe: 'Europe',
+      northAmerica: 'North America',
+      southAmerica: 'South America',
+      africa: 'Africa',
+      oceania: 'Oceania',
+      filterByCountry: 'Filter by Country',
+      allCountries: 'All Countries',
+      materialFlowByRegion: 'Material Flow by Global Region',
+      crossBorderOpportunities: 'Cross-Border Circular Opportunities',
+      localToGlobalPathways: 'Local-to-Global Opportunity Pathways',
+      verifiedBenchmark: 'Verified Empirical Benchmark',
+      demonstrationModel: 'Illustrative Demonstration Model',
+      estimatedCapacity: 'Estimated Throughput Capacity',
+      underAssessment: 'Under Regional Assessment',
+      throughput: 'Throughput',
+      conversionRate: 'Circular Conversion',
+      openRecyclerClearinghouse: 'Open Recycler Clearinghouse',
+      activeJurisdiction: 'Active Regulatory Jurisdiction',
+      tradeCompliance: 'Basel Convention & Cross-Border Compliance',
+    },
+  },
+
+  ta: {
+    brand: {
+      name: 'SUZARCHI',
+      tamilName: 'சுழற்சி',
+      tagline: 'One Material. Multiple Possibilities.',
+      subTagline: 'உபரிப் பொருட்களை தொழில்துறைகளுக்கான சிறந்த மறுபயன்பாட்டு வாய்ப்புகளுடன் இணைக்கவும் — செயற்கை நுண்ணறிவின் ஆற்றலுடன்.',
+    },
+    nav: {
+      dashboard: 'முதன்மை பலகை',
+      materialPassport: 'பொருள் பாஸ்போர்ட்',
+      postMaterial: '+ புதிய பொருளைப் பதிவு செய்க',
+      browseTaxonomy: 'வகைப்பாட்டை உலாவுக',
+      aiMatchAnalysis: 'AI பொருத்தம் பகுப்பாய்வு',
+      globalDemand: 'உலகளாவிய தேவை நிலவரம்',
+      buyerRequests: 'வாங்குவோர் கோரிக்கைகள்',
+      myListings: 'என் பொருள் பட்டியல்கள்',
+      analytics: 'சுழற்சி அளவீடுகள்',
+      verificationLog: 'சரிபார்ப்பு தணிக்கை',
+      circularNetwork: 'பிராந்திய மறுசுழற்சியாளர்கள்',
+      documentation: 'தள ஆவணங்கள்',
+      settings: 'அமைப்புகள் & அலகுகள்',
+      traceabilityBatches: 'தொகுதி கண்காணிப்பு & QR',
+      scope3Ghg: 'Scope 3 கார்பன் சரிபார்ப்பு',
+      b2bEscrow: 'B2B எஸ்க்ரோ ஒப்பந்தங்கள்',
+      recyclerClearinghouse: 'மறுசுழற்சி கூட்டமைப்பு',
+      tradeAndRfq: 'வர்த்தகம் & RFQ',
+      impactLca: 'சுழற்சி தாக்கம் & LCA',
+    },
+    evidence: {
+      confirmed: 'உறுதிப்படுத்தப்பட்டது',
+      reported: 'உறுதிப்படுத்தல் தேவை (அறிவிக்கப்பட்டது)',
+      estimated: 'லேபிள் / காட்சி மதிப்பீட்டிலிருந்து',
+      unknown: 'தெரியவில்லை / குறிப்பிடப்படவில்லை',
+      confirmedDesc: 'ஆய்வக சோதனை, ஆலை குறிச்சொற்கள் அல்லது துல்லிய அளவீடுகள் மூலம் சரிபார்க்கப்பட்டது.',
+      reportedDesc: 'பொருள் சப்ளையரால் சுயமாக அறிவிக்கப்பட்டது; அனுபவ சரிபார்ப்பு நிலுவையில் உள்ளது.',
+      estimatedDesc: 'காட்சி அடிப்படையில் அல்லது நிலையான செயல்பாட்டு அனுமானங்களிலிருந்து மதிப்பிடப்பட்டது.',
+      unknownDesc: 'தொழில்நுட்ப மதிப்பு இல்லை; செயலாக்கத்திற்கு முன் சரிபார்க்கப்பட வேண்டும்.',
+    },
+    verdicts: {
+      satisfied: 'பொருந்துகிறது',
+      pendingVerification: 'சரிபார்ப்பு நிலுவையில்',
+      blocked: 'தடைசெய்யப்பட்டது',
+    },
+    actions: {
+      postNewMaterial: 'பாஸ்போர்ட்டில் சேர்க்க',
+      switchCase: 'மாதிரியை மாற்று / திருத்து',
+      viewFullPassport: 'முழு பாஸ்போர்ட்டைக் காண்க',
+      discoverReuseOpportunities: 'மறுபயன்பாட்டு வாய்ப்புகளைக் கண்டறிக',
+      uploadImages: 'புகைப்படங்கள் & ஆவணங்களைப் பதிவேற்றுக',
+      removeImage: 'புகைப்படத்தை நீக்கு',
+      saveDraft: 'வரைவாக சேமி',
+      submitPassport: 'பொருள் பாஸ்போர்ட்டை உருவாக்குக',
+      close: 'மூடுக',
+      cancel: 'ரத்து செய்',
+      share: 'பகிர்',
+      save: 'சேமி',
+      searchPlaceholder: 'பொருட்கள், வகைகள், பயன்பாடுகளைத் தேடுக...',
+      viewAll: 'அனைத்தையும் காண்க',
+      selectLanguage: 'காட்சி மொழியைத் தேர்ந்தெடுக்கவும்',
+      selectMarket: 'இயக்க சந்தையைத் தேர்ந்தெடுக்கவும்',
+      clearFilters: 'வடிகட்டிகளை நீக்கு',
+    },
+    metrics: {
+      totalSurplusListed: 'பட்டியலிடப்பட்ட மொத்த உபரி',
+      activeDemandSignals: 'செயலில் உள்ள தேவை சமிக்ஞைகள்',
+      highConfidenceMatches: 'சரிபார்க்கப்பட்ட பொருத்தங்கள்',
+      co2Mitigation: 'CO₂ குறைப்பு மதிப்பீடு',
+      circularConversionRate: 'வட்டப் பொருளாதார மாற்று விகிதம்',
+    },
+    heroValues: {
+      reduceWaste: 'கழிவைக் குறைத்தல்',
+      createValue: 'மதிப்பை உருவாக்குதல்',
+      supportCircular: 'வட்டப் பொருளாதார ஆதரவு',
+      connectMarkets: 'உலகளாவிய சந்தைகளை இணைத்தல்',
+    },
+    units: {
+      metric: 'மெட்ரிக் (கிலோ, செ.மீ, மீ)',
+      imperial: 'இம்பீரியல் (பவுண்டு, அங்குலம், யார்டு)',
+      weight: 'எடை அலகுகள்',
+      length: 'நீள அலகுகள்',
+    },
+    categories: {
+      allCategories: 'அனைத்து வகைகள்',
+      fabricsAndKnits: 'துணிகள் & பின்னலாடை',
+      spinningMill: 'நூல் மில் கழிவுகள்',
+      handloomCraft: 'கைத்தறி & பாரம்பரிய பட்டு',
+      yarnsAndCones: 'நூல் கோன்கள் (Cones)',
+      institutionalLinens: 'மருத்துவ துணி வகைகள்',
+      industrialWipers: 'தொழில்துறை துடைப்பான்கள்',
+      role: 'தொழில் பங்கு',
+    },
+    dashboard: {
+      roleAdaptiveDashboard: 'பங்கு அடிப்படையிலான முதன்மை பலகை',
+      roleTailoredQuickActions: 'பங்கு அடிப்படையிலான விரைவு நடவடிக்கைகள்',
+      myListings: 'என் பொருள் பட்டியல்கள்',
+      latestBuyerRequests: 'சமீபத்திய வாங்குவோர் கோரிக்கைகள்',
+      materialPassportQuickView: 'பொருள் பாஸ்போர்ட் சுருக்கம்',
+      uploadAndAiExtract: 'பதிவேற்றம் & AI பிரித்தெடுத்தல்',
+      metaAiIntake: 'Meta AI உட்கொள்ளல்',
+      quickSwitchCases: 'முன்பே கட்டமைக்கப்பட்ட வழக்குகள் (விரைவு மாற்றம்):',
+    },
+    analytics: {
+      title: 'வட்டப் பொருளாதார பகுப்பாய்வு & பிராந்திய முனையங்கள்',
+      subtitle: 'உலகளாவிய ஜவுளி மறுசுழற்சி முனையங்களின் நேரடி ஓட்டத் தரவு',
+      liveClusterNetwork: 'நேரடி பிராந்திய வலையமைப்பு',
+      allRegions: 'அனைத்து பிராந்தியங்கள்',
+      asia: 'ஆசியா',
+      europe: 'ஐரோப்பா',
+      northAmerica: 'வட அமெரிக்கா',
+      southAmerica: 'தென் அமெரிக்கா',
+      africa: 'ஆப்பிரிக்கா',
+      oceania: 'ஓசியானியா',
+      filterByCountry: 'நாடுகள் வாரியாக வடிகட்டு',
+      allCountries: 'அனைத்து நாடுகள்',
+      materialFlowByRegion: 'பிராந்திய பொருள் ஓட்டம்',
+      crossBorderOpportunities: 'எல்லை தாண்டிய சுழற்சி வாய்ப்புகள்',
+      localToGlobalPathways: 'உள்ளூர் முதல் உலகளாவிய வாய்ப்புப் பாதைகள்',
+      verifiedBenchmark: 'சரிபார்க்கப்பட்ட அளவுகோல்',
+      demonstrationModel: 'மாதிரி உருவகப்படுத்துதல்',
+      estimatedCapacity: 'மதிப்பிடப்பட்ட திறன்',
+      underAssessment: 'மதிப்பீட்டில் உள்ளது',
+      throughput: 'கணிக்கப்பட்ட செயல்திறன்',
+      conversionRate: 'சுழற்சி மாற்று விகிதம்',
+      openRecyclerClearinghouse: 'சர்வதேச மறுசுழற்சி கூட்டமைப்பைத் திறக்கவும்',
+      activeJurisdiction: 'செயலில் உள்ள ஒழுங்குமுறை அதிகார வரம்பு',
+      tradeCompliance: 'பாசல் மாநாடு மற்றும் எல்லை தாண்டிய இணக்கம்',
+    },
+  },
+
+  hi: {
+    brand: {
+      name: 'SUZARCHI',
+      tamilName: 'சுழற்சி',
+      tagline: 'One Material. Multiple Possibilities.',
+      subTagline: 'अधिशेष सामग्रियों को उद्योगों में सही चक्रीय अवसरों से जोड़ें — एआई की शक्ति के साथ।',
+    },
+    nav: {
+      dashboard: 'डैशबोर्ड',
+      materialPassport: 'सामग्री पासपोर्ट (DPP)',
+      postMaterial: '+ सामग्री पोस्ट करें',
+      browseTaxonomy: 'सामग्री वर्गीकरण',
+      aiMatchAnalysis: 'एआई मैच इंटेलिजेंस',
+      globalDemand: 'वैश्विक मांग स्नैपशॉट',
+      buyerRequests: 'खरीदार पूछताछ',
+      myListings: 'मेरी अधिशेष लिस्टिंग',
+      analytics: 'चक्रीयता मेट्रिक्स',
+      verificationLog: 'सत्यापन ऑडिट',
+      circularNetwork: 'क्षेत्रीय रीसाइक्लर्स',
+      documentation: 'प्लेटफ़ॉर्म दस्तावेज़ीकरण',
+      settings: 'सेटिंग्स और इकाइयाँ',
+      traceabilityBatches: 'बैच ट्रेसिबिलिटी और QR',
+      scope3Ghg: 'स्कोप 3 GHG कार्बन लेखांकन',
+      b2bEscrow: 'B2B एस्क्रो और वाणिज्यिक निपटान',
+      recyclerClearinghouse: 'रीसाइक्लर समाशोधन',
+      tradeAndRfq: 'व्यापार और RFQ',
+      impactLca: 'चक्रीय प्रभाव और LCA साक्ष्य',
+    },
+    evidence: {
+      confirmed: 'पुष्ट (प्रमाणित)',
+      reported: 'पुष्टि की आवश्यकता (घोषित)',
+      estimated: 'लेबल / दृश्य अनुमान',
+      unknown: 'अज्ञात / अनिर्दिष्ट',
+      confirmedDesc: 'मान्यता प्राप्त प्रयोगशाला परीक्षण, मिल टैग या सटीक माप द्वारा सत्यापित।',
+      reportedDesc: 'आपूर्तिकर्ता द्वारा स्व-घोषित; सत्यापन लंबित है।',
+      estimatedDesc: 'दृश्य रूप से या परिचालन मानकों के आधार पर अनुमानित।',
+      unknownDesc: 'तकनीकी मान गायब है; प्रसंस्करण से पहले जांचना आवश्यक है।',
+    },
+    verdicts: {
+      satisfied: 'संतुष्ट',
+      pendingVerification: 'सत्यापन लंबित',
+      blocked: 'अवरुद्ध (सुरक्षा नियम)',
+    },
+    actions: {
+      postNewMaterial: 'पासपोर्ट में सामग्री जोड़ें',
+      switchCase: 'केस बदलें / संपादित करें',
+      viewFullPassport: 'पूर्ण पासपोर्ट देखें',
+      discoverReuseOpportunities: 'पुनर्चक्रण अवसर खोजें',
+      uploadImages: 'तस्वीरें और दस्तावेज़ अपलोड करें',
+      removeImage: 'फोटो हटाएं',
+      saveDraft: 'ड्राफ्ट सहेजें',
+      submitPassport: 'डिजिटल पासपोर्ट बनाएं',
+      close: 'बंद करें',
+      cancel: 'रद्द करें',
+      share: 'साझा करें',
+      save: 'सहेजें',
+      searchPlaceholder: 'सामग्री, श्रेणियां, उपयोग खोजें...',
+      viewAll: 'सभी देखें',
+      selectLanguage: 'भाषा चुनें',
+      selectMarket: 'बाज़ार और अधिकार क्षेत्र चुनें',
+      clearFilters: 'फ़िल्टर हटाएं',
+    },
+    metrics: {
+      totalSurplusListed: 'कुल सूचीबद्ध अधिशेष',
+      activeDemandSignals: 'सक्रिय मांग संकेत',
+      highConfidenceMatches: 'सत्यापित मैच',
+      co2Mitigation: 'CO₂ शमन अनुमान',
+      circularConversionRate: 'चक्रीय रूपांतरण दर',
+    },
+    heroValues: {
+      reduceWaste: 'अपशिष्ट कम करें',
+      createValue: 'मूल्य सृजन करें',
+      supportCircular: 'चक्रीय अर्थव्यवस्था समर्थन',
+      connectMarkets: 'वैश्विक बाज़ारों को जोड़ें',
+    },
+    units: {
+      metric: 'मीट्रिक (किग्रा, सेमी, मी)',
+      imperial: 'इंपीरियल (पाउंड, इंच, गज)',
+      weight: 'वजन इकाइयाँ',
+      length: 'लंबाई इकाइयाँ',
+    },
+    categories: {
+      allCategories: 'सभी श्रेणियाँ',
+      fabricsAndKnits: 'वस्त्र और निट्स',
+      spinningMill: 'कताई मिल अधिशेष',
+      handloomCraft: 'हथकरघा और शिल्प रेशम',
+      yarnsAndCones: 'धागे और कोन (Cones)',
+      institutionalLinens: 'संस्थागत लिनन',
+      industrialWipers: 'औद्योगिक वाइपर',
+      role: 'भूमिका',
+    },
+    dashboard: {
+      roleAdaptiveDashboard: 'भूमिका-अनुकूली डैशबोर्ड',
+      roleTailoredQuickActions: 'भूमिका-विशिष्ट त्वरित कार्रवाइयाँ',
+      myListings: 'मेरी अधिशेष लिस्टिंग',
+      latestBuyerRequests: 'नवीनतम खरीदार अनुरोध',
+      materialPassportQuickView: 'सामग्री पासपोर्ट त्वरित दृश्य',
+      uploadAndAiExtract: 'अपलोड और एआई निष्कर्षण',
+      metaAiIntake: 'मेटा एआई इनटेक',
+      quickSwitchCases: 'पूर्व-कॉन्फ़िगर मामले (त्वरित स्विच):',
+    },
+    analytics: {
+      title: 'चक्रीयता विश्लेषण और वैश्विक कॉरिडोर',
+      subtitle: 'प्रमुख वैश्विक वस्त्र विनिर्माण केंद्रों में सामग्री प्रवाह का अनुभवजन्य विश्लेषण',
+      liveClusterNetwork: 'लाइव वैश्विक क्लस्टर नेटवर्क',
+      allRegions: 'सभी क्षेत्र',
+      asia: 'एशिया',
+      europe: 'यूरोप',
+      northAmerica: 'उत्तरी अमेरिका',
+      southAmerica: 'दक्षिण अमेरिका',
+      africa: 'अफ्रीका',
+      oceania: 'ओशिनिया',
+      filterByCountry: 'देश के अनुसार फ़िल्टर करें',
+      allCountries: 'सभी देश',
+      materialFlowByRegion: 'वैश्विक क्षेत्र अनुसार सामग्री प्रवाह',
+      crossBorderOpportunities: 'सीमा पार चक्रीय अवसर',
+      localToGlobalPathways: 'स्थानीय से वैश्विक अवसर मार्ग',
+      verifiedBenchmark: 'सत्यापित अनुभवजन्य बेंचमार्क',
+      demonstrationModel: 'प्रदर्शन मॉडल',
+      estimatedCapacity: 'अनुमानित थ्रूपुट क्षमता',
+      underAssessment: 'क्षेत्रीय मूल्यांकन के अधीन',
+      throughput: 'थ्रूपुट',
+      conversionRate: 'चक्रीय रूपांतरण दर',
+      openRecyclerClearinghouse: 'रीसाइक्लर समाशोधन खोलें',
+      activeJurisdiction: 'सक्रिय नियामक क्षेत्राधिकार',
+      tradeCompliance: 'बेसल कन्वेंशन और सीमा पार अनुपालन',
+    },
+  },
+
+  es: {
+    brand: {
+      name: 'SUZARCHI',
+      tamilName: 'சுழற்சி',
+      tagline: 'One Material. Multiple Possibilities.',
+      subTagline: 'Conecte materiales excedentes con las mejores oportunidades de economía circular con IA.',
+    },
+    nav: {
+      dashboard: 'Panel de Control',
+      materialPassport: 'Pasaporte Digital (DPP)',
+      postMaterial: '+ Publicar Material',
+      browseTaxonomy: 'Explorar Taxonomía',
+      aiMatchAnalysis: 'Inteligencia Circular AI',
+      globalDemand: 'Demanda Global',
+      buyerRequests: 'Consultas de Compradores',
+      myListings: 'Mis Lotes Excedentes',
+      analytics: 'Métricas de Circularidad',
+      verificationLog: 'Auditorías de Verificación',
+      circularNetwork: 'Recicladores Regionales',
+      documentation: 'Documentación',
+      settings: 'Ajustes y Unidades',
+      traceabilityBatches: 'Trazabilidad de Lotes y QR',
+      scope3Ghg: 'Contabilidad de Carbono Alcance 3',
+      b2bEscrow: 'Depósito en Garantía B2B',
+      recyclerClearinghouse: 'Cámara de Recicladores',
+      tradeAndRfq: 'Comercio y RFQ',
+      impactLca: 'Impacto Circular y ACV',
+    },
+    evidence: {
+      confirmed: 'Confirmado (Verificado)',
+      reported: 'Declarado por Proveedor',
+      estimated: 'Estimación Visual / Etiqueta',
+      unknown: 'Desconocido / No Especificado',
+      confirmedDesc: 'Verificado mediante pruebas de laboratorio acreditadas o albaranes oficiales.',
+      reportedDesc: 'Autodeclarado por el proveedor; pendiente de auditoría.',
+      estimatedDesc: 'Aproximado visualmente o derivado de promedios operativos.',
+      unknownDesc: 'Dato técnico faltante; debe verificarse antes del procesamiento.',
+    },
+    verdicts: {
+      satisfied: 'Conforme',
+      pendingVerification: 'Verificación Requerida',
+      blocked: 'Bloqueado (Criterio de Seguridad)',
+    },
+    actions: {
+      postNewMaterial: 'Añadir al Pasaporte',
+      switchCase: 'Cambiar Ejemplo / Editar',
+      viewFullPassport: 'Ver Pasaporte Completo',
+      discoverReuseOpportunities: 'Descubrir Salidas Circulares',
+      uploadImages: 'Subir Fotos y Certificados',
+      removeImage: 'Eliminar Foto',
+      saveDraft: 'Guardar Borrador',
+      submitPassport: 'Generar Pasaporte Digital',
+      close: 'Cerrar',
+      cancel: 'Cancelar',
+      share: 'Compartir',
+      save: 'Guardar',
+      searchPlaceholder: 'Buscar materiales, fibras, categorías...',
+      viewAll: 'Ver Todo',
+      selectLanguage: 'Seleccionar Idioma',
+      selectMarket: 'Seleccionar Mercado Operativo',
+      clearFilters: 'Limpiar Filtros',
+    },
+    metrics: {
+      totalSurplusListed: 'Excedente Total Registrado',
+      activeDemandSignals: 'Señales de Demanda Activa',
+      highConfidenceMatches: 'Coincidencias Verificadas',
+      co2Mitigation: 'Mitigación CO₂ Estimada',
+      circularConversionRate: 'Conversión Circular',
+    },
+    heroValues: {
+      reduceWaste: 'Reducir Residuos',
+      createValue: 'Crear Valor',
+      supportCircular: 'Economía Circular',
+      connectMarkets: 'Conectar Mercados Globales',
+    },
+    units: {
+      metric: 'Métrico (kg, cm, m)',
+      imperial: 'Imperial (lb, in, yd)',
+      weight: 'Unidades de Peso',
+      length: 'Unidades de Longitud',
+    },
+    categories: {
+      allCategories: 'Todas las Categorías',
+      fabricsAndKnits: 'Tejidos y Géneros de Punto',
+      spinningMill: 'Excedentes de Hilatura',
+      handloomCraft: 'Artesanía y Seda Natural',
+      yarnsAndCones: 'Hilados y Conos',
+      institutionalLinens: 'Lencería Institucional',
+      industrialWipers: 'Trapos y Limpiadores Industriales',
+      role: 'Perfil Industrial',
+    },
+    dashboard: {
+      roleAdaptiveDashboard: 'Panel Adaptado al Perfil',
+      roleTailoredQuickActions: 'Acciones Rápidas del Perfil',
+      myListings: 'Mis Lotes Excedentes',
+      latestBuyerRequests: 'Últimas Solicitudes de Compra',
+      materialPassportQuickView: 'Vista Rápida del Pasaporte',
+      uploadAndAiExtract: 'Subir y Extraer con IA',
+      metaAiIntake: 'Admisión Meta AI',
+      quickSwitchCases: 'Casos Preconfigurados (Cambio Rápido):',
+    },
+    analytics: {
+      title: 'Analítica de Circularidad y Corredores Globales',
+      subtitle: 'Flujos Empíricos de Materiales en los Principales Polos Textiles Mundiales',
+      liveClusterNetwork: 'Red Global de Clústeres Activa',
+      allRegions: 'Todas las Regiones',
+      asia: 'Asia',
+      europe: 'Europa',
+      northAmerica: 'América del Norte',
+      southAmerica: 'América del Sur',
+      africa: 'África',
+      oceania: 'Oceanía',
+      filterByCountry: 'Filtrar por País',
+      allCountries: 'Todos los Países',
+      materialFlowByRegion: 'Flujo de Materiales por Región',
+      crossBorderOpportunities: 'Oportunidades Circulares Transfronterizas',
+      localToGlobalPathways: 'Rutas de Valorización Local a Global',
+      verifiedBenchmark: 'Referencia Empírica Verificada',
+      demonstrationModel: 'Modelo de Demostración Ilustrativo',
+      estimatedCapacity: 'Capacidad de Procesamiento Estimada',
+      underAssessment: 'En Evaluación Regional',
+      throughput: 'Volumen Estimado',
+      conversionRate: 'Tasa de Conversión Circular',
+      openRecyclerClearinghouse: 'Abrir Cámara de Recicladores',
+      activeJurisdiction: 'Jurisdicción Normativa Activa',
+      tradeCompliance: 'Cumplimiento del Convenio de Basilea',
+    },
+  },
+
+  'zh-CN': {
+    brand: {
+      name: 'SUZARCHI',
+      tamilName: 'சுழற்சி',
+      tagline: 'One Material. Multiple Possibilities.',
+      subTagline: '借助人工智能的力量，将工业闲置材料与全行业优质循环利用机会精准链接。',
+    },
+    nav: {
+      dashboard: '仪表板',
+      materialPassport: '数字产品护照 (DPP)',
+      postMaterial: '+ 发布闲置物料',
+      browseTaxonomy: '浏览材料分类',
+      aiMatchAnalysis: 'AI 匹配智能洞察',
+      globalDemand: '全球需求态势',
+      buyerRequests: '买家采购需求',
+      myListings: '我的闲置物料',
+      analytics: '循环利用指标',
+      verificationLog: '溯源验证审计',
+      circularNetwork: '区域回收再造网络',
+      documentation: '平台说明文档',
+      settings: '设置与计量单位',
+      traceabilityBatches: '批次溯源与二维码',
+      scope3Ghg: '范围3温室气体碳核算',
+      b2bEscrow: 'B2B托管与商业结算',
+      recyclerClearinghouse: '国际回收商清算所',
+      tradeAndRfq: '贸易与报价请求 (RFQ)',
+      impactLca: '循环影响与LCA证据',
+    },
+    evidence: {
+      confirmed: '已确认（实验室认证）',
+      reported: '待确认（供应商申报）',
+      estimated: '视觉估算 / 标签标称',
+      unknown: '未知 / 未标明',
+      confirmedDesc: '经认可实验室检测、出厂标牌或精密称重独立验证。',
+      reportedDesc: '由物料供应商自主申报，等待进一步检测核实。',
+      estimatedDesc: '依据外观视觉或行业通用基准推算。',
+      unknownDesc: '缺少技术指标；在循环加工前必须进行实测。',
+    },
+    verdicts: {
+      satisfied: '符合要求',
+      pendingVerification: '待验证',
+      blocked: '已拦截（安全红线）',
+    },
+    actions: {
+      postNewMaterial: '录入材料护照',
+      switchCase: '切换示例 / 编辑',
+      viewFullPassport: '查看完整护照',
+      discoverReuseOpportunities: '探索循环再造机遇',
+      uploadImages: '上传照片与检测报告',
+      removeImage: '删除照片',
+      saveDraft: '保存草稿',
+      submitPassport: '生成数字材料护照',
+      close: '关闭',
+      cancel: '取消',
+      share: '分享',
+      save: '保存',
+      searchPlaceholder: '搜索材料、纺织分类、用途...',
+      viewAll: '查看全部',
+      selectLanguage: '选择显示语言',
+      selectMarket: '选择运营市场与法规区域',
+      clearFilters: '清除筛选',
+    },
+    metrics: {
+      totalSurplusListed: '已登记闲置总量',
+      activeDemandSignals: '活跃需求信号',
+      highConfidenceMatches: '已验证匹配项目',
+      co2Mitigation: '碳减排预估总量',
+      circularConversionRate: '循环转化利用率',
+    },
+    heroValues: {
+      reduceWaste: '减少工业废弃',
+      createValue: '激发再生价值',
+      supportCircular: '推动循环经济',
+      connectMarkets: '联通全球循环市场',
+    },
+    units: {
+      metric: '公制 (kg, cm, m)',
+      imperial: '英制 (lb, in, yd)',
+      weight: '重量单位',
+      length: '长度单位',
+    },
+    categories: {
+      allCategories: '全部分类',
+      fabricsAndKnits: '织物与针织面料',
+      spinningMill: '纺纱厂落棉与短绒',
+      handloomCraft: '手工织造与天然蚕丝',
+      yarnsAndCones: '纱线与纸管锥筒',
+      institutionalLinens: '医用与公共布草',
+      industrialWipers: '工业清洁擦拭布',
+      role: '行业角色',
+    },
+    dashboard: {
+      roleAdaptiveDashboard: '角色自适应工作台',
+      roleTailoredQuickActions: '专属快速操作',
+      myListings: '我的物料清单',
+      latestBuyerRequests: '最新买家求购',
+      materialPassportQuickView: '材料护照快速预览',
+      uploadAndAiExtract: '上传照片并进行AI分析',
+      metaAiIntake: 'Meta AI 智能进料',
+      quickSwitchCases: '预设生命周期案例（快速切换）：',
+    },
+    analytics: {
+      title: '循环经济分析与全球制造走廊',
+      subtitle: '全球主要纺织与服装工业集群材料流动的实证数据洞察',
+      liveClusterNetwork: '实时全球产业集群网络',
+      allRegions: '全部大区',
+      asia: '亚洲',
+      europe: '欧洲',
+      northAmerica: '北美洲',
+      southAmerica: '南美洲',
+      africa: '非洲',
+      oceania: '大洋洲',
+      filterByCountry: '按国家筛选',
+      allCountries: '所有国家',
+      materialFlowByRegion: '各全球区域材料流动分布',
+      crossBorderOpportunities: '跨境循环再造商机',
+      localToGlobalPathways: '本土至全球循环利用路径',
+      verifiedBenchmark: '已核实行业基准',
+      demonstrationModel: '示范性推演模型',
+      estimatedCapacity: '估算处理能力',
+      underAssessment: '区域评估中',
+      throughput: '预估年吞吐量',
+      conversionRate: '循环转化率',
+      openRecyclerClearinghouse: '打开国际回收商清算名录',
+      activeJurisdiction: '当前适用环保与固废法规',
+      tradeCompliance: '巴塞尔公约跨境合规核验',
+    },
+  },
+
+  'zh-TW': {
+    brand: {
+      name: 'SUZARCHI',
+      tamilName: 'சுழற்சி',
+      tagline: 'One Material. Multiple Possibilities.',
+      subTagline: '借助人工智慧的力量，將工業剩餘材料與跨產業循環利用機遇精準連結。',
+    },
+    nav: {
+      dashboard: '儀表板',
+      materialPassport: '數位產品護照 (DPP)',
+      postMaterial: '+ 發布庫存物料',
+      browseTaxonomy: '瀏覽材料分類',
+      aiMatchAnalysis: 'AI 匹配智慧洞察',
+      globalDemand: '全球需求態勢',
+      buyerRequests: '買家採購需求',
+      myListings: '我的剩餘物料',
+      analytics: '循環利用指標',
+      verificationLog: '溯源驗證審計',
+      circularNetwork: '區域回收網絡',
+      documentation: '平台說明文件',
+      settings: '設定與度量單位',
+      traceabilityBatches: '批次溯源與二維碼',
+      scope3Ghg: '範疇3溫室氣體碳盤查',
+      b2bEscrow: 'B2B履約託管與結算',
+      recyclerClearinghouse: '國際回收商結算所',
+      tradeAndRfq: '貿易與詢價 (RFQ)',
+      impactLca: '循環影響與LCA證據',
+    },
+    evidence: {
+      confirmed: '已確認（實驗室認證）',
+      reported: '待確認（供應商申報）',
+      estimated: '視覺推估 / 標籤標稱',
+      unknown: '未知 / 未標明',
+      confirmedDesc: '經認可實驗室檢測、出廠標牌或精密磅秤獨立驗證。',
+      reportedDesc: '由物料供應商自主申報，等待進一步檢測確認。',
+      estimatedDesc: '依據外觀視覺或產業通用基準推算。',
+      unknownDesc: '缺少技術指標；在循環加工前必須進行實測。',
+    },
+    verdicts: {
+      satisfied: '符合要求',
+      pendingVerification: '待驗證',
+      blocked: '已攔截（安全紅線）',
+    },
+    actions: {
+      postNewMaterial: '登錄材料護照',
+      switchCase: '切換範例 / 編輯',
+      viewFullPassport: '檢視完整護照',
+      discoverReuseOpportunities: '探索循環利用機遇',
+      uploadImages: '上傳照片與檢測報告',
+      removeImage: '刪除照片',
+      saveDraft: '儲存草稿',
+      submitPassport: '產生數位材料護照',
+      close: '關閉',
+      cancel: '取消',
+      share: '分享',
+      save: '儲存',
+      searchPlaceholder: '搜尋材料、紡織分類、用途...',
+      viewAll: '檢視全部',
+      selectLanguage: '選擇顯示語言',
+      selectMarket: '選擇營運市場與法規區域',
+      clearFilters: '清除篩選',
+    },
+    metrics: {
+      totalSurplusListed: '已登記庫存總量',
+      activeDemandSignals: '活躍需求信號',
+      highConfidenceMatches: '已驗證匹配項目',
+      co2Mitigation: '碳減排預估總量',
+      circularConversionRate: '循環轉化利用率',
+    },
+    heroValues: {
+      reduceWaste: '減少工業廢棄',
+      createValue: '激發再生價值',
+      supportCircular: '推動循環經濟',
+      connectMarkets: '聯通全球循環市場',
+    },
+    units: {
+      metric: '公制 (kg, cm, m)',
+      imperial: '英制 (lb, in, yd)',
+      weight: '重量單位',
+      length: '長度單位',
+    },
+    categories: {
+      allCategories: '全部分類',
+      fabricsAndKnits: '織物與針織面料',
+      spinningMill: '紡紗廠落棉與短絨',
+      handloomCraft: '手工織造與天然蠶絲',
+      yarnsAndCones: '紗線與錐筒 (Cones)',
+      institutionalLinens: '醫療與公共布草',
+      industrialWipers: '工業擦拭布',
+      role: '產業角色',
+    },
+    dashboard: {
+      roleAdaptiveDashboard: '角色自適應工作台',
+      roleTailoredQuickActions: '專屬快速操作',
+      myListings: '我的物料清單',
+      latestBuyerRequests: '最新買家求購',
+      materialPassportQuickView: '材料護照快速預覽',
+      uploadAndAiExtract: '上傳照片並進行AI分析',
+      metaAiIntake: 'Meta AI 智慧進料',
+      quickSwitchCases: '預設生命週期案例（快速切換）：',
+    },
+    analytics: {
+      title: '循環經濟分析與全球製造廊道',
+      subtitle: '全球主要紡織與服裝製造聚落材料流動的實證數據洞察',
+      liveClusterNetwork: '即時全球產業聚落網絡',
+      allRegions: '全部大區',
+      asia: '亞洲',
+      europe: '歐洲',
+      northAmerica: '北美洲',
+      southAmerica: '南美洲',
+      africa: '非洲',
+      oceania: '大洋洲',
+      filterByCountry: '按國家篩選',
+      allCountries: '所有國家',
+      materialFlowByRegion: '各全球區域材料流動分布',
+      crossBorderOpportunities: '跨境循環再造商機',
+      localToGlobalPathways: '在地至全球循環路徑',
+      verifiedBenchmark: '已核實產業基準',
+      demonstrationModel: '示範性推演模型',
+      estimatedCapacity: '估算處理能力',
+      underAssessment: '區域評估中',
+      throughput: '預估年吞吐量',
+      conversionRate: '循環轉化率',
+      openRecyclerClearinghouse: '開啟國際回收商名錄',
+      activeJurisdiction: '當前適用環保與廢棄物法規',
+      tradeCompliance: '巴塞爾公約跨境合規核驗',
+    },
+  },
+
+  vi: {
+    brand: {
+      name: 'SUZARCHI',
+      tamilName: 'சுழற்சி',
+      tagline: 'One Material. Multiple Possibilities.',
+      subTagline: 'Kết nối nguyên liệu dư thừa với các cơ hội tuần hoàn tối ưu giữa các ngành — với sức mạnh của AI.',
+    },
+    nav: {
+      dashboard: 'Bảng Điều Khiển',
+      materialPassport: 'Hộ Chiếu Sản Phẩm Số (DPP)',
+      postMaterial: '+ Đăng Vật Liệu',
+      browseTaxonomy: 'Khám Phá Phân Loại',
+      aiMatchAnalysis: 'Trí Tuệ Khớp Nối AI',
+      globalDemand: 'Nhu Cầu Toàn Cầu',
+      buyerRequests: 'Yêu Cầu Của Người Mua',
+      myListings: 'Vật Liệu Của Tôi',
+      analytics: 'Số Liệu Tuần Hoàn',
+      verificationLog: 'Nhật Ký Xác Minh',
+      circularNetwork: 'Mạng Lưới Tái Chế Khu Vực',
+      documentation: 'Tài Liệu Nền Tảng',
+      settings: 'Cài Đặt & Đơn Vị',
+      traceabilityBatches: 'Truy Xuất Nguồn Gốc & QR',
+      scope3Ghg: 'Kiểm Kê Khí Nhà Kính Phạm Vi 3',
+      b2bEscrow: 'Ký Quỹ & Thanh Toán B2B',
+      recyclerClearinghouse: 'Liên Minh Tái Chế Quốc Tế',
+      tradeAndRfq: 'Giao Dịch & Báo Giá (RFQ)',
+      impactLca: 'Tác Động Tuần Hoàn & LCA',
+    },
+    evidence: {
+      confirmed: 'Đã Xác Nhận (Kiểm Định)',
+      reported: 'Cần Xác Minh (Nhà Cung Cấp Khai)',
+      estimated: 'Ước Tính Trực Quan / Nhãn Mác',
+      unknown: 'Chưa Rõ / Chưa Xác Định',
+      confirmedDesc: 'Được kiểm định độc lập bởi phòng thí nghiệm, tem xưởng hoặc cân chuẩn.',
+      reportedDesc: 'Do nhà cung cấp tự công bố; đang chờ xác minh thực nghiệm.',
+      estimatedDesc: 'Ước tính từ cảm quan hoặc thông số hoạt động tiêu chuẩn.',
+      unknownDesc: 'Thiếu thông số kỹ thuật; cần kiểm tra trước khi tái chế.',
+    },
+    verdicts: {
+      satisfied: 'Thỏa Mãn',
+      pendingVerification: 'Chờ Xác Minh',
+      blocked: 'Bị Chặn (Rào Cản An Toàn)',
+    },
+    actions: {
+      postNewMaterial: 'Đăng Vật Liệu Vào Hộ Chiếu',
+      switchCase: 'Đổi Tình Huống / Sửa',
+      viewFullPassport: 'Xem Đầy Đủ Hộ Chiếu',
+      discoverReuseOpportunities: 'Tìm Cơ Hội Tái Sử Dụng',
+      uploadImages: 'Tải Ảnh & Tài Liệu',
+      removeImage: 'Xóa Ảnh',
+      saveDraft: 'Lưu Bản Nháp',
+      submitPassport: 'Tạo Hộ Chiếu Vật Liệu Số',
+      close: 'Đóng',
+      cancel: 'Hủy Bỏ',
+      share: 'Chia Sẻ',
+      save: 'Lưu',
+      searchPlaceholder: 'Tìm vật liệu, phân loại, ứng dụng...',
+      viewAll: 'Xem Tất Cả',
+      selectLanguage: 'Chọn Ngôn Ngữ Hiển Thị',
+      selectMarket: 'Chọn Thị Trường & Khu Vực Pháp Lý',
+      clearFilters: 'Xóa Bộ Lọc',
+    },
+    metrics: {
+      totalSurplusListed: 'Tổng Dư Thừa Đã Đăng',
+      activeDemandSignals: 'Tín Hiệu Nhu Cầu Tích Cực',
+      highConfidenceMatches: 'Khớp Nối Đã Xác Minh',
+      co2Mitigation: 'Ước Tính Giảm Phát Thải CO₂',
+      circularConversionRate: 'Tỷ Lệ Chuyển Đổi Tuần Hoàn',
+    },
+    heroValues: {
+      reduceWaste: 'Giảm Rác Thải',
+      createValue: 'Tạo Giá Trị',
+      supportCircular: 'Hỗ Trợ Kinh Tế Tuần Hoàn',
+      connectMarkets: 'Kết Nối Thị Trường Toàn Cầu',
+    },
+    units: {
+      metric: 'Hệ Mét (kg, cm, m)',
+      imperial: 'Hệ Anh (lb, in, yd)',
+      weight: 'Đơn Vị Trọng Lượng',
+      length: 'Đơn Vị Chiều Dài',
+    },
+    categories: {
+      allCategories: 'Tất Cả Danh Mục',
+      fabricsAndKnits: 'Vải Dệt & Dệt Kim',
+      spinningMill: 'Phế Liệu Kéo Sợi',
+      handloomCraft: 'Thủ Công & Tơ Lụa',
+      yarnsAndCones: 'Sợi & Ống Chỉ (Cones)',
+      institutionalLinens: 'Đồ Vải Khách Sạn & Bệnh Viện',
+      industrialWipers: 'Vải Lau Công Nghiệp',
+      role: 'Vai Trò Doanh Nghiệp',
+    },
+    dashboard: {
+      roleAdaptiveDashboard: 'Bảng Điều Khiển Theo Vai Trò',
+      roleTailoredQuickActions: 'Thao Tác Nhanh Theo Vai Trò',
+      myListings: 'Vật Liệu Của Tôi',
+      latestBuyerRequests: 'Yêu Cầu Mua Hàng Mới Nhất',
+      materialPassportQuickView: 'Xem Nhanh Hộ Chiếu Vật Liệu',
+      uploadAndAiExtract: 'Tải Lên & Trích Xuất AI',
+      metaAiIntake: 'Tiếp Nhận Meta AI',
+      quickSwitchCases: 'Các Trường Hợp Mẫu (Chuyển Nhanh):',
+    },
+    analytics: {
+      title: 'Phân Tích Tính Tuần Hoàn & Hành Lang Toàn Cầu',
+      subtitle: 'Dòng Chảy Vật Liệu Thực Nghiệm Tại Các Trung Tâm Dệt May Quốc Tế',
+      liveClusterNetwork: 'Mạng Lưới Cụm Công Nghiệp Toàn Cầu',
+      allRegions: 'Tất Cả Khu Vực',
+      asia: 'Châu Á',
+      europe: 'Châu Âu',
+      northAmerica: 'Bắc Mỹ',
+      southAmerica: 'Nam Mỹ',
+      africa: 'Châu Phi',
+      oceania: 'Châu Đại Dương',
+      filterByCountry: 'Lọc Theo Quốc Gia',
+      allCountries: 'Tất Cả Quốc Gia',
+      materialFlowByRegion: 'Phân Bổ Dòng Vật Liệu Toàn Cầu',
+      crossBorderOpportunities: 'Cơ Hội Tuần Hoàn Xuyên Biên Giới',
+      localToGlobalPathways: 'Lộ Trình Từ Địa Phương Đến Toàn Cầu',
+      verifiedBenchmark: 'Tiêu Chuẩn Đã Kiểm Định',
+      demonstrationModel: 'Mô Hình Trực Quan Mẫu',
+      estimatedCapacity: 'Công Suất Ước Tính',
+      underAssessment: 'Đang Trong Quá Trình Đánh Giá',
+      throughput: 'Sản Lượng Dự Kiến',
+      conversionRate: 'Tỷ Lệ Tái Chế Tuần Hoàn',
+      openRecyclerClearinghouse: 'Mở Danh Bạ Tái Chế Quốc Tế',
+      activeJurisdiction: 'Quy Định Pháp Lý Hiện Hành',
+      tradeCompliance: 'Tuân Thủ Công Ước Basel & Xuyên Biên Giới',
+    },
+  },
+
+  de: {
+    brand: {
+      name: 'SUZARCHI',
+      tamilName: 'சுழற்சி',
+      tagline: 'One Material. Multiple Possibilities.',
+      subTagline: 'Verbinden Sie textile Reststoffe mit werthaltigen Kreislauflösungen – angetrieben von industrieller KI.',
+    },
+    nav: {
+      dashboard: 'Dashboard',
+      materialPassport: 'Digitaler Produktpass (DPP)',
+      postMaterial: '+ Material Erfassen',
+      browseTaxonomy: 'Material-Taxonomie',
+      aiMatchAnalysis: 'KI-Kreislaufanalyse',
+      globalDemand: 'Globale Nachfrage',
+      buyerRequests: 'Käufer-Suchanfragen',
+      myListings: 'Meine Reststoff-Posten',
+      analytics: 'Kreislauf-Metriken',
+      verificationLog: 'Verifizierungs-Audits',
+      circularNetwork: 'Regionales Recycler-Netzwerk',
+      documentation: 'Plattform-Dokumentation',
+      settings: 'Einstellungen & Einheiten',
+      traceabilityBatches: 'Chargen-Rückverfolgbarkeit & QR',
+      scope3Ghg: 'Scope 3 Treibhausgasbilanzierung',
+      b2bEscrow: 'B2B-Treuhand & Handelsabwicklung',
+      recyclerClearinghouse: 'Recycler-Clearingstelle',
+      tradeAndRfq: 'Handel & RFQ',
+      impactLca: 'Ökobilanz & Zirkuläre Wirkung',
+    },
+    evidence: {
+      confirmed: 'Bestätigt (Laborgeprüft)',
+      reported: 'Deklariert (Lieferantenangabe)',
+      estimated: 'Visuelle Schätzung / Etikett',
+      unknown: 'Unbekannt / Nicht Spezifiziert',
+      confirmedDesc: 'Unabhängig verifiziert durch akkreditierte Labortests, Werksetiketten oder Waagscheine.',
+      reportedDesc: 'Selbstauskunft des Materiallieferanten; empirische Verifizierung ausstehend.',
+      estimatedDesc: 'Optisch angenähert oder aus standardisierten Betriebsparametern abgeleitet.',
+      unknownDesc: 'Technischer Kennwert fehlt; muss vor Verarbeitung messtechnisch ermittelt werden.',
+    },
+    verdicts: {
+      satisfied: 'Erfüllt',
+      pendingVerification: 'Prüfung Ausstehend',
+      blocked: 'Gesperrt (Sicherheitskriterium)',
+    },
+    actions: {
+      postNewMaterial: 'In Produktpass Eintragen',
+      switchCase: 'Beispiel Wechseln / Bearbeiten',
+      viewFullPassport: 'Vollständigen Pass Anzeigen',
+      discoverReuseOpportunities: 'Kreislaufwege Entdecken',
+      uploadImages: 'Fotos & Laborberichte Hochladen',
+      removeImage: 'Foto Entfernen',
+      saveDraft: 'Entwurf Speichern',
+      submitPassport: 'Digitalen Produktpass Generieren',
+      close: 'Schließen',
+      cancel: 'Abbrechen',
+      share: 'Teilen',
+      save: 'Speichern',
+      searchPlaceholder: 'Materialien, Fasern, Verwendungen suchen...',
+      viewAll: 'Alle Anzeigen',
+      selectLanguage: 'Sprache Auswählen',
+      selectMarket: 'Markt & Rechtsraum Auswählen',
+      clearFilters: 'Filter Zurücksetzen',
+    },
+    metrics: {
+      totalSurplusListed: 'Erfasste Reststoffe Gesamt',
+      activeDemandSignals: 'Aktive Nachfragesignale',
+      highConfidenceMatches: 'Verifizierte Zirkulär-Matches',
+      co2Mitigation: 'Geschätzte CO₂-Vermeidung',
+      circularConversionRate: 'Zirkuläre Konversionsrate',
+    },
+    heroValues: {
+      reduceWaste: 'Abfall Reduzieren',
+      createValue: 'Wert Schöpfen',
+      supportCircular: 'Kreislaufwirtschaft Fördern',
+      connectMarkets: 'Globale Märkte Vernetzen',
+    },
+    units: {
+      metric: 'Metrisch (kg, cm, m)',
+      imperial: 'Imperial (lb, in, yd)',
+      weight: 'Gewichtseinheiten',
+      length: 'Längeneinheiten',
+    },
+    categories: {
+      allCategories: 'Alle Kategorien',
+      fabricsAndKnits: 'Gewebe & Maschenware',
+      spinningMill: 'Spinnerei-Kämmlinge & Reste',
+      handloomCraft: 'Handweberei & Seide',
+      yarnsAndCones: 'Garne & Spulen (Cones)',
+      institutionalLinens: 'Objekt- & Krankenhauswäsche',
+      industrialWipers: 'Industrieputzlappen',
+      role: 'Industrierolle',
+    },
+    dashboard: {
+      roleAdaptiveDashboard: 'Rollenadaptives Arbeitsdashboard',
+      roleTailoredQuickActions: 'Rollenspezifische Schnellaktionen',
+      myListings: 'Meine Reststoff-Posten',
+      latestBuyerRequests: 'Neueste Einkäufer-Suchanfragen',
+      materialPassportQuickView: 'Produktpass-Schnellansicht',
+      uploadAndAiExtract: 'Hochladen & KI-Extrahierung',
+      metaAiIntake: 'Meta-KI-Erfassung',
+      quickSwitchCases: 'Vorkonfigurierte Lebenszyklus-Fälle (Schnellwechsel):',
+    },
+    analytics: {
+      title: 'Zirkulär-Analytik & Globale Industriekorridore',
+      subtitle: 'Empirische Stoffstromanalysen bedeutender internationaler Textilherstellungszentren',
+      liveClusterNetwork: 'Aktives Globales Cluster-Netzwerk',
+      allRegions: 'Alle Regionen',
+      asia: 'Asien',
+      europe: 'Europa',
+      northAmerica: 'Nordamerika',
+      southAmerica: 'Südamerika',
+      africa: 'Afrika',
+      oceania: 'Ozeanien',
+      filterByCountry: 'Nach Land Filtern',
+      allCountries: 'Alle Länder',
+      materialFlowByRegion: 'Globale Stoffströme nach Region',
+      crossBorderOpportunities: 'Grenzüberschreitende Verwertungschancen',
+      localToGlobalPathways: 'Regionale zu Globale Verwertungswege',
+      verifiedBenchmark: 'Verifizierte Benchmark-Daten',
+      demonstrationModel: 'Illustratives Demonstrationsmodell',
+      estimatedCapacity: 'Geschätzte Durchsatzkapazität',
+      underAssessment: 'In Regionaler Prüfung',
+      throughput: 'Geschätzter Durchsatz',
+      conversionRate: 'Kreislauf-Konversionsrate',
+      openRecyclerClearinghouse: 'Recycler-Clearingstelle Öffnen',
+      activeJurisdiction: 'Geltender Rechts- & Regulierungsrahmen',
+      tradeCompliance: 'Basler Übereinkommen & Exportkonformität',
+    },
+  },
+
+  fr: {
+    brand: {
+      name: 'SUZARCHI',
+      tamilName: 'சுழற்சி',
+      tagline: 'One Material. Multiple Possibilities.',
+      subTagline: 'Connectez les excédents textiles aux meilleures opportunités de réemploi circulaire grâce à l’IA.',
+    },
+    nav: {
+      dashboard: 'Tableau de Bord',
+      materialPassport: 'Passeport Numérique (DPP)',
+      postMaterial: '+ Déclarer un Gisement',
+      browseTaxonomy: 'Explorer la Taxonomie',
+      aiMatchAnalysis: 'Analyse Circulaire IA',
+      globalDemand: 'Demande Mondiale',
+      buyerRequests: 'Demandes d’Achat',
+      myListings: 'Mes Gisements',
+      analytics: 'Métriques Circulaires',
+      verificationLog: 'Audits de Traçabilité',
+      circularNetwork: 'Recycleurs Régionaux',
+      documentation: 'Documentation Plateforme',
+      settings: 'Paramètres & Unités',
+      traceabilityBatches: 'Traçabilité des Lots & QR',
+      scope3Ghg: 'Bilan Carbone Scope 3',
+      b2bEscrow: 'Séquestre B2B & Règlement',
+      recyclerClearinghouse: 'Centrale des Recycleurs',
+      tradeAndRfq: 'Commerce & Devis (RFQ)',
+      impactLca: 'Impact Circulaire & ACV',
+    },
+    evidence: {
+      confirmed: 'Confirmé (Vérifié en Laboratoire)',
+      reported: 'Déclaré (Auto-déclaration Fournisseur)',
+      estimated: 'Estimé Visuellement / Étiquette',
+      unknown: 'Inconnu / Non Spécifié',
+      confirmedDesc: 'Vérifié par test en laboratoire accrédité, étiquette d’usine ou pesée officielle.',
+      reportedDesc: 'Déclaré par le fournisseur; en attente d’audit empirique.',
+      estimatedDesc: 'Approximé visuellement ou dérivé de moyennes industrielles.',
+      unknownDesc: 'Paramètre technique manquant; nécessite une vérification avant transformation.',
+    },
+    verdicts: {
+      satisfied: 'Conforme',
+      pendingVerification: 'Vérification Requise',
+      blocked: 'Bloqué (Critère de Sécurité)',
+    },
+    actions: {
+      postNewMaterial: 'Ajouter au Passeport',
+      switchCase: 'Changer d’Exemple / Modifier',
+      viewFullPassport: 'Voir le Passeport Complet',
+      discoverReuseOpportunities: 'Découvrir Débouchés Circulaires',
+      uploadImages: 'Téléverser Photos & Rapports',
+      removeImage: 'Supprimer Photo',
+      saveDraft: 'Enregistrer Brouillon',
+      submitPassport: 'Générer Passeport Numérique',
+      close: 'Fermer',
+      cancel: 'Annuler',
+      share: 'Partager',
+      save: 'Enregistrer',
+      searchPlaceholder: 'Rechercher matières, fibres, usages...',
+      viewAll: 'Voir Tout',
+      selectLanguage: 'Choisir la Langue',
+      selectMarket: 'Choisir le Marché & Juridiction',
+      clearFilters: 'Effacer Filtres',
+    },
+    metrics: {
+      totalSurplusListed: 'Total Gisements Référencés',
+      activeDemandSignals: 'Signaux de Demande Active',
+      highConfidenceMatches: 'Débouchés Certifiés',
+      co2Mitigation: 'Évitement CO₂ Estimé',
+      circularConversionRate: 'Taux de Valorisation Circulaire',
+    },
+    heroValues: {
+      reduceWaste: 'Réduire les Déchets',
+      createValue: 'Créer de la Valeur',
+      supportCircular: 'Soutenir l’Économie Circulaire',
+      connectMarkets: 'Connecter les Marchés Mondiaux',
+    },
+    units: {
+      metric: 'Métrique (kg, cm, m)',
+      imperial: 'Impérial (lb, in, yd)',
+      weight: 'Unités de Poids',
+      length: 'Unités de Longueur',
+    },
+    categories: {
+      allCategories: 'Toutes les Catégories',
+      fabricsAndKnits: 'Tissus & Tricots',
+      spinningMill: 'Filature & Chutes de Peignage',
+      handloomCraft: 'Tissage Artisanal & Soie',
+      yarnsAndCones: 'Fils & Cônes',
+      institutionalLinens: 'Linge Institutionnel',
+      industrialWipers: 'Chiffons d’Essuyage Industriel',
+      role: 'Profil Métier',
+    },
+    dashboard: {
+      roleAdaptiveDashboard: 'Tableau de Bord Métier Adaptatif',
+      roleTailoredQuickActions: 'Actions Rapides par Profil',
+      myListings: 'Mes Gisements en Ligne',
+      latestBuyerRequests: 'Dernières Demandes d’Achat',
+      materialPassportQuickView: 'Aperçu du Passeport Numérique',
+      uploadAndAiExtract: 'Téléverser & Analyser par IA',
+      metaAiIntake: 'Enregistrement Meta AI',
+      quickSwitchCases: 'Cas Pratiques Préconfigurés (Changement Rapide) :',
+    },
+    analytics: {
+      title: 'Analyse Circulaire & Corridors Industriels Mondiaux',
+      subtitle: 'Flux Empiriques de Matières dans les Principaux Bassins Textiles Internationaux',
+      liveClusterNetwork: 'Réseau Mondial Actif de Pôles',
+      allRegions: 'Toutes les Régions',
+      asia: 'Asie',
+      europe: 'Europe',
+      northAmerica: 'Amérique du Nord',
+      southAmerica: 'Amérique du Sud',
+      africa: 'Afrique',
+      oceania: 'Océanie',
+      filterByCountry: 'Filtrer par Pays',
+      allCountries: 'Tous les Pays',
+      materialFlowByRegion: 'Flux de Matières par Région Mondiale',
+      crossBorderOpportunities: 'Opportunités Circulaires Transfrontalières',
+      localToGlobalPathways: 'Voies de Valorisation Locales à Mondiales',
+      verifiedBenchmark: 'Données de Référence Vérifiées',
+      demonstrationModel: 'Modèle Démonstratif Illustratif',
+      estimatedCapacity: 'Capacité de Traitement Estimée',
+      underAssessment: 'En Cours d’Évaluation Régionale',
+      throughput: 'Débit Annuel Estimé',
+      conversionRate: 'Taux de Conversion Circulaire',
+      openRecyclerClearinghouse: 'Ouvrir la Centrale des Recycleurs',
+      activeJurisdiction: 'Cadre Réglementaire en Vigueur',
+      tradeCompliance: 'Conformité Convention de Bâle & Exportation',
+    },
+  },
+
+  it: {
+    brand: {
+      name: 'SUZARCHI',
+      tamilName: 'சுழற்சி',
+      tagline: 'One Material. Multiple Possibilities.',
+      subTagline: 'Collega le eccedenze tessili alle migliori opportunità di economia circolare industriale.',
+    },
+    nav: {
+      dashboard: 'Cruscotto',
+      materialPassport: 'Passaporto Digitale (DPP)',
+      postMaterial: '+ Registra Materiale',
+      browseTaxonomy: 'Esplora Tassonomia',
+      aiMatchAnalysis: 'Analisi Circolare AI',
+      globalDemand: 'Domanda Globale',
+      buyerRequests: 'Richieste Acquirenti (RFQ)',
+      myListings: 'Miei Lotti Disponibili',
+      analytics: 'Metriche di Circolarità',
+      verificationLog: 'Verifiche & Tracciabilità',
+      circularNetwork: 'Rigeneratori Regionali',
+      documentation: 'Documentazione Piattaforma',
+      settings: 'Impostazioni & Unità',
+      traceabilityBatches: 'Tracciabilità Lotti & QR',
+      scope3Ghg: 'Contabilità Emissioni Scope 3',
+      b2bEscrow: 'Escrow B2B & Regolamento',
+      recyclerClearinghouse: 'Clearinghouse Riciclatori',
+      tradeAndRfq: 'Commercio & RFQ',
+      impactLca: 'Impatto Circolare & Prove LCA',
+    },
+    evidence: {
+      confirmed: 'Confermato (Certificato da Laboratorio)',
+      reported: 'Dichiarato (Autodichiarazione Fornitore)',
+      estimated: 'Stima Visiva / Etichetta',
+      unknown: 'Sconosciuto / Non Specificato',
+      confirmedDesc: 'Verificato da laboratorio accreditato, cartellini di fabbrica o pesata ufficiale.',
+      reportedDesc: 'Autocertificato dal fornitore; in attesa di audit empirico.',
+      estimatedDesc: 'Stima visiva o derivata da standard operativi medi.',
+      unknownDesc: 'Parametro tecnico mancante; da accertare prima della rilavorazione.',
+    },
+    verdicts: {
+      satisfied: 'Soddisfatto',
+      pendingVerification: 'Verifica Necessaria',
+      blocked: 'Bloccato (Criterio di Sicurezza)',
+    },
+    actions: {
+      postNewMaterial: 'Salva nel Passaporto Digitale',
+      switchCase: 'Cambia Esempio / Modifica',
+      viewFullPassport: 'Vedi Passaporto Completo',
+      discoverReuseOpportunities: 'Scopri Sbocchi Circolari',
+      uploadImages: 'Carica Foto & Documenti',
+      removeImage: 'Rimuovi Foto',
+      saveDraft: 'Salva Bozza',
+      submitPassport: 'Genera Passaporto DPP',
+      close: 'Chiudi',
+      cancel: 'Annulla',
+      share: 'Condividi',
+      save: 'Salva',
+      searchPlaceholder: 'Cerca materiali, filati, tessuti...',
+      viewAll: 'Vedi Tutti',
+      selectLanguage: 'Seleziona Lingua',
+      selectMarket: 'Seleziona Mercato Operativo',
+      clearFilters: 'Cancella Filtri',
+    },
+    metrics: {
+      totalSurplusListed: 'Totale Giacenze Registrate',
+      activeDemandSignals: 'Segnali di Domanda Attiva',
+      highConfidenceMatches: 'Corrispondenze Verificate',
+      co2Mitigation: 'Stima Risparmio CO₂',
+      circularConversionRate: 'Tasso di Recupero Circolare',
+    },
+    heroValues: {
+      reduceWaste: 'Ridurre gli Sprechi',
+      createValue: 'Creare Valore',
+      supportCircular: 'Economia Circolare',
+      connectMarkets: 'Collegare i Mercati Globali',
+    },
+    units: {
+      metric: 'Metrico (kg, cm, m)',
+      imperial: 'Imperiale (lb, in, yd)',
+      weight: 'Unità di Peso',
+      length: 'Unità di Lunghezza',
+    },
+    categories: {
+      allCategories: 'Tutte le Categorie',
+      fabricsAndKnits: 'Tessuti & Maglieria',
+      spinningMill: 'Cascami di Filatura & Pettinatura',
+      handloomCraft: 'Tessitura Artigianale & Seta',
+      yarnsAndCones: 'Filati & Rocche (Coni)',
+      institutionalLinens: 'Biancheria per Collettività',
+      industrialWipers: 'Strofinacci Industriali',
+      role: 'Profilo Industriale',
+    },
+    dashboard: {
+      roleAdaptiveDashboard: 'Cruscotto Adattivo per Ruolo',
+      roleTailoredQuickActions: 'Azioni Rapide per Profilo',
+      myListings: 'Miei Lotti Registrati',
+      latestBuyerRequests: 'Ultime Richieste Acquirenti',
+      materialPassportQuickView: 'Anteprima Passaporto Materiale',
+      uploadAndAiExtract: 'Carica & Estrai con IA',
+      metaAiIntake: 'Acquisizione Meta AI',
+      quickSwitchCases: 'Casi Applicativi Preconfigurati (Cambio Rapido):',
+    },
+    analytics: {
+      title: 'Analisi di Circolarità & Corridoi Industriali Globali',
+      subtitle: 'Flussi Empirici di Materiali nei Principali Distretti Tessili Internazionali',
+      liveClusterNetwork: 'Rete Globale di Distretti Attiva',
+      allRegions: 'Tutte le Regioni',
+      asia: 'Asia',
+      europe: 'Europa',
+      northAmerica: 'America del Nord',
+      southAmerica: 'America del Sud',
+      africa: 'Africa',
+      oceania: 'Oceania',
+      filterByCountry: 'Filtra per Nazione',
+      allCountries: 'Tutte le Nazioni',
+      materialFlowByRegion: 'Flusso di Materiali per Regione Globale',
+      crossBorderOpportunities: 'Opportunità Circolari Transfrontaliere',
+      localToGlobalPathways: 'Percorsi di Valorizzazione da Locale a Globale',
+      verifiedBenchmark: 'Benchmark Empirico Verificato',
+      demonstrationModel: 'Modello Dimostrativo Illustrativo',
+      estimatedCapacity: 'Capacità di Trattamento Stimata',
+      underAssessment: 'In Fase di Valutazione Regionale',
+      throughput: 'Volume Annuo Stimato',
+      conversionRate: 'Tasso di Recupero Circolare',
+      openRecyclerClearinghouse: 'Apri Clearinghouse Riciclatori',
+      activeJurisdiction: 'Giurisdizione Normativa Applicabile',
+      tradeCompliance: 'Conformità Convenzione di Basilea & Export',
+    },
+  },
+};
+`;
+
+fs.writeFileSync('src/lib/translations.ts', translationsContent, 'utf8');
+console.log('Successfully wrote src/lib/translations.ts with complete 10 languages dictionary!');
