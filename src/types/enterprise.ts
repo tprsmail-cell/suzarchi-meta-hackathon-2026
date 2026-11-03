@@ -214,4 +214,7 @@ export interface MetaAiUsageBudget {
   isBudgetExceeded: boolean;
   modelIdentifier: string;
   lastInvocationTimestamp?: string;
+  totalAccountCreditPoolUsd?: number; // USD $150.00 owner credit pool
+  initialTestingAllocationUsd?: number; // USD $5.00 testing allocation
+  providerStatus?: 'PREPARATION_OFFLINE' | 'AWAITING_OWNER_KEY' | 'ACTIVE_LIVE';
 }

@@ -43,6 +43,7 @@ import { MyListingsView } from '@/components/views/MyListingsView';
 import { ImpactView } from '@/components/views/ImpactView';
 import { AnalyticsView } from '@/components/views/AnalyticsView';
 import { BatchQrModal } from '@/components/BatchQrModal';
+import { DemoWalkthroughTour } from '@/components/DemoWalkthroughTour';
 import { MultiFacilityInventoryLot } from '@/types/enterprise';
 
 import { Sparkles, Layers, CheckCircle2 } from 'lucide-react';
@@ -263,7 +264,18 @@ export default function DashboardPage() {
           </div>
         )}
 
-        <main className="flex-1 w-full p-4 sm:p-5 lg:p-6">
+        <main className="flex-1 w-full p-4 sm:p-5 lg:p-6 space-y-4">
+          {/* Interactive Hackathon Demonstration Tour (8-Step Circular Journey) */}
+          <DemoWalkthroughTour
+            onSelectMaterial={(id) => setSelectedMaterialId(id)}
+            onOpenAiIntake={() => handleOpenAiIntake()}
+            onOpenPassportDetail={() => setIsDetailModalOpen(true)}
+            onOpenRfqModal={(title) => handleOpenRfq(title)}
+            onNavigateToView={(view) => setActiveNavView(view)}
+            activePassport={activePassport}
+            activeNavView={activeNavView}
+          />
+
           {/* VIEW 1: Primary Main Dashboard */}
           {activeNavView === 'dashboard' && (
             <div className="w-full space-y-4">

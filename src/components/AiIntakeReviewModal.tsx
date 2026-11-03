@@ -708,9 +708,9 @@ export function AiIntakeReviewModal({
                     <span className="text-[10px] text-gray-500 block">Alt: Llama-3.2-11B-Vision</span>
                   </div>
                   <div className="rounded-xl border border-emerald-100 bg-white p-2.5">
-                    <span className="text-[10px] uppercase font-bold text-gray-400 block">Testing Budget Cap</span>
-                    <span className="font-semibold text-emerald-800">$5.00 USD Maximum</span>
-                    <span className="text-[10px] text-gray-500 block">Est: ~$0.02 / query</span>
+                    <span className="text-[10px] uppercase font-bold text-gray-400 block">Account & Test Cap</span>
+                    <span className="font-semibold text-emerald-800">$150 Credits / $5 Cap</span>
+                    <span className="text-[10px] text-gray-500 block">Current Spend: $0.00 USD</span>
                   </div>
                   <div className="rounded-xl border border-emerald-100 bg-white p-2.5">
                     <span className="text-[10px] uppercase font-bold text-gray-400 block">Evidence Rule</span>

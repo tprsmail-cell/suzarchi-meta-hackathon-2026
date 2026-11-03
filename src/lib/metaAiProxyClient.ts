@@ -48,6 +48,9 @@ export const INITIAL_META_AI_BUDGET: MetaAiUsageBudget = {
   maxRequestsAllowed: 250, // Approx $0.02 per multimodal inference request
   isBudgetExceeded: false,
   modelIdentifier: 'muse-spark-1.1',
+  totalAccountCreditPoolUsd: 150.0,
+  initialTestingAllocationUsd: 5.0,
+  providerStatus: 'PREPARATION_OFFLINE',
 };
 
 // In-memory budget state for browser session

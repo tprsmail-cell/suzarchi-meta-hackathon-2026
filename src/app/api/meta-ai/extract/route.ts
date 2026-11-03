@@ -17,6 +17,7 @@ import { StructuredPassportExtractionResult } from '@/lib/metaAiContracts';
  */
 
 interface ServerBudgetTracker {
+  totalCreditPoolUsd: number;
   maxSpendUsd: number;
   currentSpendUsd: number;
   requestCount: number;
@@ -25,6 +26,7 @@ interface ServerBudgetTracker {
 }
 
 const SERVER_BUDGET: ServerBudgetTracker = {
+  totalCreditPoolUsd: parseFloat(process.env.META_AI_CREDIT_POOL_USD || '150.00'),
   maxSpendUsd: parseFloat(process.env.META_AI_MAX_SPEND_USD || '5.00'),
   currentSpendUsd: 0.0,
   requestCount: 0,
@@ -144,8 +146,11 @@ export async function POST(request: Request) {
         providerConfig: {
           endpoint: baseUrl,
           configuredModel: model,
+          totalCreditPoolUsd: SERVER_BUDGET.totalCreditPoolUsd,
           budgetCapUsd: SERVER_BUDGET.maxSpendUsd,
+          currentSpendUsd: SERVER_BUDGET.currentSpendUsd,
           isLiveEnabled: isEnabled,
+          providerStatus: !isEnabled ? 'PREPARATION_OFFLINE' : 'AWAITING_OWNER_KEY',
         },
       });
     }
