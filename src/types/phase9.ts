@@ -40,7 +40,7 @@ export interface Scope3GhgRecord {
   netAvoidedEmissionsTonsCo2e: number;
   waterSavingsMegaLiters: number;
   emissionFactorRef: EmissionFactorReference;
-  verificationStatus: 'AUDITED_VERIFIED' | 'SELF_DECLARED_PENDING_AUDIT' | 'THIRD_PARTY_CERTIFIED';
+  verificationStatus: 'AUDITED_VERIFIED' | 'SELF_DECLARED_PENDING_AUDIT' | 'THIRD_PARTY_CERTIFIED' | 'UNVERIFIED_INTERNAL_MODEL';
   auditingBody: string; // e.g., 'TÜV Rheinland' or 'SGS Carbon Services'
   verificationDate: string;
   certificateHashSha256: string;

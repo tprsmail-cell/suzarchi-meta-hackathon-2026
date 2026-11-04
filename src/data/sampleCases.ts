@@ -1,14 +1,105 @@
 import { MaterialPassport } from '@/types/passport';
 
 /**
- * Case 1: Exact data matching the approved SUZARCHI Dashboard Mockup
+ * Case 1: Verified Phase 1.2 Smoke Test 3 Test Sample
+ * Pink Ribbed Corduroy Fabric (batch PCB-2026-IN-42)
  */
 export const DASHBOARD_SAMPLE_CASE: MaterialPassport = {
   id: 'mat-001',
   countryOfOrigin: 'IN',
-  hsCode: '6006.21',
+  hsCode: '5801.22',
   batchNumber: 'PCB-2026-IN-42',
   dppIdentifier: 'urn:dpp:suzarchi:in:mat-001',
+  taxonomyId: 'CAT-GAR-CUT-CHN',
+  streamId: 'GAR',
+  materialName: {
+    value: 'Pink Ribbed Corduroy Fabric',
+    status: 'REPORTED',
+  },
+  materialType: {
+    value: 'Corduroy textile (Woven pile)',
+    status: 'REPORTED',
+  },
+  fibreComposition: {
+    value: 'Reported as 100% Cotton (Unverified)',
+    status: 'REPORTED',
+    sourceNote: 'Supplier intake declaration; requires ISO 1833 chemical laboratory analysis for confirmation.',
+  },
+  quantityKg: {
+    value: 300,
+    status: 'CONFIRMED',
+    sourceNote: 'Weighed on warehouse receipt',
+  },
+  quantityUnit: {
+    value: 'kg',
+    status: 'CONFIRMED',
+  },
+  gsmWeight: {
+    value: null,
+    status: 'UNKNOWN',
+    sourceNote: 'Not visually observable from photograph; lab GSM cutter required',
+  },
+  widthCm: {
+    value: 145,
+    status: 'ESTIMATED',
+    sourceNote: 'Estimated from roll width',
+  },
+  colour: {
+    value: 'Light Pink',
+    status: 'ESTIMATED',
+    sourceNote: 'Optical observation of fabric sample',
+  },
+  condition: {
+    value: 'New / Unused (surplus)',
+    status: 'CONFIRMED',
+  },
+  form: {
+    value: 'Fabric roll',
+    status: 'CONFIRMED',
+  },
+  location: {
+    value: 'Tirupur, India',
+    status: 'CONFIRMED',
+  },
+  indicativePrice: {
+    value: '₹180 / kg (Negotiable)',
+    status: 'REPORTED',
+  },
+  chemicalFinishes: {
+    value: 'Peach finish reported; chemical safety unverified',
+    status: 'REPORTED',
+  },
+  contaminationStatus: {
+    value: 'Chemical contamination status UNKNOWN',
+    status: 'REPORTED',
+  },
+  cleanlinessRating: {
+    value: 'COMMERCIAL_SURPLUS',
+    status: 'REPORTED',
+  },
+  isControlledOrHazardous: null,
+  notes: 'Pink ribbed corduroy fabric sample, woven cut-pile structure with distinct vertical ribs. Phase 1.2 verified test sample. Photographic evidence alone cannot confirm fiber composition, GSM, or chemical safety.',
+  images: [
+    {
+      id: 'img-pink-corduroy-01',
+      url: '/assets/pink-corduroy-sample.png',
+      caption: 'Pink Ribbed Corduroy Fabric Sample',
+      mediaType: 'OVERVIEW',
+      name: 'phase1_2_pink_corduroy_sample.png',
+      sizeBytes: 967353,
+    },
+  ],
+};
+
+/**
+ * Preserved Navy Single Jersey Scenario (Secondary Demo Fixture)
+ */
+export const NAVY_KNIT_SAMPLE_CASE: MaterialPassport = {
+  id: 'mat-001-navy',
+  countryOfOrigin: 'IN',
+  hsCode: '6006.21',
+  batchNumber: 'PCB-2026-IN-42-NAVY',
+  dppIdentifier: 'urn:dpp:suzarchi:in:mat-001-navy',
   taxonomyId: 'CAT-GAR-CUT-CHN',
   streamId: 'GAR',
   materialName: {
@@ -523,6 +614,7 @@ export const WORKSHOP_OILY_RAGS_CASE: MaterialPassport = {
 
 export const ALL_SAMPLE_CASES: Record<string, MaterialPassport> = {
   'mat-001': DASHBOARD_SAMPLE_CASE,
+  'mat-001-navy': NAVY_KNIT_SAMPLE_CASE,
   'mat-002': HACKATHON_SAMPLE_CASE,
   'mat-003': HANDLOOM_ZARI_CASE,
   'mat-004': SPINNING_NOIL_CASE,

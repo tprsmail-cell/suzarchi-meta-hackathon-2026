@@ -68,11 +68,11 @@ export function AiIntakeReviewModal({
     if (initialPhotos.length > 0) return initialPhotos;
     return [
       {
-        id: 'photo-navy-init',
-        url: '/assets/navy-single-jersey-fabric.jpg',
-        name: 'navy-single-jersey-fabric.jpg',
-        sizeBytes: 89918,
-        caption: 'Navy Fabric Roll with Draped Fabric Sample',
+        id: 'photo-pink-corduroy-init',
+        url: '/assets/pink-corduroy-sample.png',
+        name: 'phase1_2_pink_corduroy_sample.png',
+        sizeBytes: 967353,
+        caption: 'Pink Ribbed Corduroy Fabric Sample',
         mediaType: 'OVERVIEW',
         isPrimary: true,
       },
@@ -362,7 +362,11 @@ export function AiIntakeReviewModal({
       if (editingFieldKey === 'estimatedGsm' || editingFieldKey === 'estimatedWidthCm') {
         parsedVal = customValueInput ? parseFloat(customValueInput) : null;
       } else if (editingFieldKey === 'isControlledOrHazardous') {
-        parsedVal = customValueInput === 'true' || customValueInput === 'yes';
+        parsedVal = customValueInput === 'true' || customValueInput === 'yes'
+          ? true
+          : customValueInput === 'false' || customValueInput === 'no'
+          ? false
+          : null;
       }
 
       // Strict Governance: Laboratory properties cannot be promoted to CONFIRMED

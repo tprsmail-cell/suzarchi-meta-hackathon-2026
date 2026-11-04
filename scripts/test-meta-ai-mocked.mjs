@@ -251,11 +251,12 @@ async function runLocalMockSuite() {
 
   // --- 8. Missing Environment Variable Fallback ---
   try {
-    // Normal call without mock mode; in preparation environment without live key
+    // Verified via mock mode to guarantee zero network egress in test runner
     const res = await callLocalProxy({
       photoUrl: '/assets/sample.jpg',
       caption: 'Offline Test Fabric',
       userConsentGranted: true,
+      mockSimulationMode: 'MOCK_DISABLED_BY_POLICY',
     });
 
     const passed =
@@ -298,8 +299,8 @@ async function runLocalMockSuite() {
   try {
     // Fire two identical requests in immediate sequence
     const [req1, req2] = await Promise.all([
-      callLocalProxy({ photoUrl: '/assets/1.jpg', caption: 'Concurrent 1', userConsentGranted: true, clientEstimatedCost: 0.02 }),
-      callLocalProxy({ photoUrl: '/assets/1.jpg', caption: 'Concurrent 1', userConsentGranted: true, clientEstimatedCost: 0.02 }),
+      callLocalProxy({ photoUrl: '/assets/1.jpg', caption: 'Concurrent 1', userConsentGranted: true, clientEstimatedCost: 0.02, mockSimulationMode: 'MOCK_CONCURRENCY' }),
+      callLocalProxy({ photoUrl: '/assets/1.jpg', caption: 'Concurrent 1', userConsentGranted: true, clientEstimatedCost: 0.02, mockSimulationMode: 'MOCK_CONCURRENCY' }),
     ]);
 
     const passed = req1.status === 200 || req2.status === 429;

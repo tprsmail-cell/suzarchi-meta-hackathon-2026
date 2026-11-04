@@ -1,0 +1,11 @@
+{
+  "timestamp": "2026-11-04T07:37:21.016Z",
+  "httpStatus": 500,
+  "latencyMs": 11379,
+  "response": {
+    "success": false,
+    "source": "LOCAL_FALLBACK",
+    "code": "INTERNAL_PROXY_ERROR",
+    "message": "Cannot read properties of null (reading 'materialName')"
+  }
+}

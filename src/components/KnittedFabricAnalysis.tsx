@@ -113,7 +113,7 @@ export function KnittedFabricAnalysis({
       name: 'Colourfastness to Laundering & Perspiration',
       standard: 'ISO 105-C06 / E04',
       priority: 'RECOMMENDED',
-      statusNote: 'Checks navy dyestuff migration and cross-staining risk',
+      statusNote: 'Checks dyestuff migration and cross-staining risk',
       destinationsAffected: ['Multi-Colour Garment Assembly'],
     },
   ];
@@ -233,7 +233,7 @@ export function KnittedFabricAnalysis({
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="text-xs sm:text-sm font-bold text-gray-900">
-                  Knitted Fabric Identification & Intake Baseline
+                  {passport.materialName.value} — Identification & Intake Baseline
                 </h3>
                 <p className="text-[11px] text-gray-500">
                   Derived directly from the current Material Passport record without fabricated assumptions.
@@ -250,7 +250,7 @@ export function KnittedFabricAnalysis({
                   Material Category
                 </span>
                 <span className="text-xs font-bold text-gray-900 mt-0.5 block">
-                  Knitted Garment Fabric Offcuts (Stream GAR)
+                  Garment Fabric Surplus (Stream {passport.streamId})
                 </span>
                 <span className="text-[10px] text-gray-500 mt-1 block">
                   Post-cutting table remnant roll inventory
@@ -259,16 +259,18 @@ export function KnittedFabricAnalysis({
 
               <div className="rounded-lg border border-gray-200 bg-gray-50/60 p-3">
                 <span className="block text-[10.5px] font-semibold text-gray-500 uppercase tracking-wider">
-                  Knit Construction
+                  Construction / Structure
                 </span>
                 <div className="flex items-center justify-between mt-0.5">
-                  <span className="text-xs font-bold text-gray-900">Single Jersey</span>
+                  <span className="text-xs font-bold text-gray-900">{passport.materialType.value}</span>
                   <span className="text-[9px] font-bold text-amber-800 bg-amber-100 px-1.5 py-0.2 rounded">
-                    REPORTED
+                    {passport.materialType.status}
                   </span>
                 </div>
                 <span className="text-[10px] text-gray-500 mt-1 block">
-                  Circular weft knit; distinct face V-loops & purl back
+                  {passport.materialType.value.toLowerCase().includes('corduroy')
+                    ? 'Woven cut-pile structure; visible vertical raised ribs (wales)'
+                    : 'Circular weft knit; distinct face V-loops & purl back'}
                 </span>
               </div>
 
@@ -396,19 +398,25 @@ export function KnittedFabricAnalysis({
                   </span>
                 </div>
                 <p className="text-[11px] text-gray-600 leading-relaxed">
-                  Characteristic V-shaped knit stitches visible on the technical face; distinct horizontal purl loop waves visible on the technical reverse. Consistent with single jersey weft knitting.
+                  {passport.materialType.value.toLowerCase().includes('corduroy')
+                    ? 'Visible vertical raised pile wales running parallel along length of fabric; soft velvety cut-pile face texture. Consistent with standard-wale corduroy construction.'
+                    : 'Characteristic V-shaped knit stitches visible on the technical face; distinct horizontal purl loop waves visible on the technical reverse. Consistent with single jersey weft knitting.'}
                 </p>
               </div>
 
               <div className="rounded-lg border border-gray-200 p-3 bg-white">
                 <div className="flex items-center justify-between mb-1">
-                  <span className="text-xs font-bold text-gray-900">Stitch Loop Regularity</span>
+                  <span className="text-xs font-bold text-gray-900">
+                    {passport.materialType.value.toLowerCase().includes('corduroy') ? 'Pile Wale Regularity' : 'Stitch Loop Regularity'}
+                  </span>
                   <span className="text-[9.5px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.2 rounded">
                     Confidence: 85%
                   </span>
                 </div>
                 <p className="text-[11px] text-gray-600 leading-relaxed">
-                  Wales and courses exhibit uniform stitch tension across open surface. No dropped stitches, visible barre lines, or irregular loose loop clusters detected in the inspected area.
+                  {passport.materialType.value.toLowerCase().includes('corduroy')
+                    ? 'Parallel corduroy ribs exhibit uniform spacing and pile density across inspected surface. No dropped tufts or bald streaks detected in the inspected area.'
+                    : 'Wales and courses exhibit uniform stitch tension across open surface. No dropped stitches, visible barre lines, or irregular loose loop clusters detected in the inspected area.'}
                 </p>
               </div>
 
@@ -444,7 +452,7 @@ export function KnittedFabricAnalysis({
                   </span>
                 </div>
                 <p className="text-[11px] text-gray-600 leading-relaxed">
-                  Deep navy hue is uniform across the surface; no visible listing shading, bleach splashes, chemical discolouration, or sunlight fading observed.
+                  {passport.colour.value} hue is uniform across the surface; no visible listing shading, bleach splashes, chemical discolouration, or sunlight fading observed.
                 </p>
               </div>
 
@@ -456,7 +464,9 @@ export function KnittedFabricAnalysis({
                   </span>
                 </div>
                 <p className="text-[11px] text-gray-600 leading-relaxed">
-                  No petroleum lubricant spots, needle oil stains, metal staple contamination, or foreign fiber contamination detected. Categorised as clean commercial surplus.
+                  {passport.isControlledOrHazardous === null
+                    ? 'No visible petroleum lubricant spots or heavy debris detected. Chemical finish status (peach finish) reported by supplier remains unverified; laboratory screening required.'
+                    : 'No petroleum lubricant spots, needle oil stains, metal staple contamination, or foreign fiber contamination detected. Categorised as clean commercial surplus.'}
                 </p>
               </div>
             </div>
@@ -508,14 +518,14 @@ export function KnittedFabricAnalysis({
                 <tbody className="divide-y divide-gray-100 bg-white">
                   <tr>
                     <td className="px-3.5 py-2.5 font-bold text-gray-900">Fabric Construction</td>
-                    <td className="px-3.5 py-2.5 text-gray-800">Single Jersey</td>
+                    <td className="px-3.5 py-2.5 text-gray-800">{passport.materialType.value}</td>
                     <td className="px-3.5 py-2.5">
-                      <span className="rounded bg-amber-100 px-2 py-0.5 text-[10px] font-bold text-amber-900">
-                        REPORTED
+                      <span className={`rounded px-2 py-0.5 text-[10px] font-bold ${getEvidenceBadgeStyle(passport.materialType.status)}`}>
+                        {passport.materialType.status}
                       </span>
                     </td>
-                    <td className="px-3.5 py-2.5 text-gray-600">Visual loop inspection & pick glass magnification</td>
-                    <td className="px-3.5 py-2.5 text-emerald-800 font-medium">Eligible for T-shirts and casualwear</td>
+                    <td className="px-3.5 py-2.5 text-gray-600">Visual loop/wale inspection & pick glass magnification</td>
+                    <td className="px-3.5 py-2.5 text-emerald-800 font-medium">Eligible for circular textile reuse and recycling</td>
                   </tr>
 
                   <tr className="bg-amber-50/20">
@@ -600,19 +610,33 @@ export function KnittedFabricAnalysis({
                   <tr>
                     <td className="px-3.5 py-2.5 font-bold text-gray-900">Contamination & Safety</td>
                     <td className="px-3.5 py-2.5 text-gray-800">
-                      {passport.isControlledOrHazardous ? 'Hazardous Hydrocarbon' : (passport.contaminationStatus?.value || 'Clean')}
+                      {passport.isControlledOrHazardous === true
+                        ? 'Hazardous Hydrocarbon'
+                        : passport.isControlledOrHazardous === null
+                        ? 'Unverified Chemical Safety'
+                        : (passport.contaminationStatus?.value || 'Clean')}
                     </td>
                     <td className="px-3.5 py-2.5">
                       <span className={`rounded px-2 py-0.5 text-[10px] font-bold ${
-                        passport.isControlledOrHazardous ? 'bg-rose-600 text-white' : 'bg-emerald-100 text-emerald-900'
+                        passport.isControlledOrHazardous === true
+                          ? 'bg-rose-600 text-white'
+                          : passport.isControlledOrHazardous === null
+                          ? 'bg-amber-100 text-amber-900'
+                          : 'bg-emerald-100 text-emerald-900'
                       }`}>
-                        {passport.isControlledOrHazardous ? 'HAZARDOUS' : 'CONFIRMED SAFE'}
+                        {passport.isControlledOrHazardous === true
+                          ? 'HAZARDOUS'
+                          : passport.isControlledOrHazardous === null
+                          ? 'VERIFY REQ'
+                          : 'CONFIRMED SAFE'}
                       </span>
                     </td>
                     <td className="px-3.5 py-2.5 text-gray-600">Organoleptic visual & hydrocarbon odor test</td>
                     <td className="px-3.5 py-2.5 font-semibold">
-                      {passport.isControlledOrHazardous ? (
+                      {passport.isControlledOrHazardous === true ? (
                         <span className="text-rose-700">Blocked from open reuse (0%)</span>
+                      ) : passport.isControlledOrHazardous === null ? (
+                        <span className="text-amber-700">Verification required before clearance</span>
                       ) : (
                         <span className="text-emerald-700">Passed safety hard constraint</span>
                       )}

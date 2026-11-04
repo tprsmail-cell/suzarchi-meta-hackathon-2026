@@ -105,14 +105,16 @@ export function MaterialPassportDetailModal({
           label: 'Contamination Assessment',
           value: passport.contaminationStatus?.value || 'Clean',
           status: passport.contaminationStatus?.status || 'REPORTED',
-          note: passport.isControlledOrHazardous
+          note: passport.isControlledOrHazardous === true
             ? 'REGULATED HAZARDOUS WASTE. Mandatory SPCB manifest tracking applies.'
+            : passport.isControlledOrHazardous === null
+            ? 'UNVERIFIED HAZARDOUS STATUS. Chemical safety data missing; laboratory screening required before release.'
             : 'Visual inspection confirms freedom from foreign metal objects, oil, or food spills.',
         },
         {
           label: 'Cleanliness Classification',
-          value: passport.cleanlinessRating?.value || (passport.isControlledOrHazardous ? 'HAZARDOUS' : 'COMMERCIAL_SURPLUS'),
-          status: passport.cleanlinessRating?.status || 'CONFIRMED',
+          value: passport.cleanlinessRating?.value || (passport.isControlledOrHazardous === true ? 'HAZARDOUS' : passport.isControlledOrHazardous === null ? 'UNKNOWN_UNVERIFIED' : 'COMMERCIAL_SURPLUS'),
+          status: passport.cleanlinessRating?.status || (passport.isControlledOrHazardous === null ? 'UNKNOWN' : 'CONFIRMED'),
         },
         {
           label: 'Country of Origin',
@@ -623,7 +625,7 @@ export function MaterialPassportDetailModal({
                   </div>
                   <div className="rounded-lg border border-emerald-200 bg-emerald-50/70 p-3 text-center">
                     <div className="text-[10px] font-bold uppercase text-emerald-800">2. Optical Sorting</div>
-                    <div className="font-bold text-gray-900 mt-1">Single Jersey Knit</div>
+                    <div className="font-bold text-gray-900 mt-1">{passport.materialType.value || 'Corduroy (Woven Pile)'}</div>
                     <div className="text-[10px] text-gray-500">Weave Geometry Tagged</div>
                   </div>
                   <div className="rounded-lg border border-emerald-200 bg-emerald-50/70 p-3 text-center">

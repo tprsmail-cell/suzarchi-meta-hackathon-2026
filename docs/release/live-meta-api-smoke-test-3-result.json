@@ -1,0 +1,64 @@
+{
+  "timestamp": "2026-11-04T09:26:45.308Z",
+  "httpStatus": 200,
+  "latencyMs": 9099,
+  "response": {
+    "success": true,
+    "source": "REMOTE_META_AI",
+    "model": "muse-spark-1.3",
+    "tokenUsage": {
+      "promptTokens": 397,
+      "completionTokens": 934,
+      "totalTokens": 1331,
+      "reasoningTokens": 712
+    },
+    "costUsd": 0.02,
+    "serverTotalSpendUsd": 0.02,
+    "extractedProperties": {
+      "materialName": {
+        "value": "Pink cotton corduroy",
+        "status": "REPORTED",
+        "sourceNote": "Meta AI Multimodal Optical Extraction (Reported Observation)"
+      },
+      "materialType": {
+        "value": "Knit Fabric Roll",
+        "status": "REPORTED"
+      },
+      "fibreComposition": {
+        "value": "Cotton / Blended (Estimated)",
+        "status": "REPORTED",
+        "sourceNote": "Optical visual estimate only; requires ISO 1833 chemical laboratory analysis for confirmation."
+      },
+      "form": {
+        "value": "Roll Goods",
+        "status": "REPORTED"
+      },
+      "contaminationRisk": "LOW",
+      "isControlledOrHazardous": false
+    },
+    "textileIntelligence": {
+      "materialCategory": "Corduroy fabric",
+      "fabricConstruction": "REPORTED: Standard wale corduroy, woven pile",
+      "visibleColour": "Pink",
+      "userReportedFibreComposition": "REPORTED 100% cotton, not laboratory verified",
+      "userReportedGsm": 180,
+      "materialCondition": "UNKNOWN - image transmission disabled, condition not reported",
+      "visibleDefects": [],
+      "potentialReusePathways": [
+        "Handmade towels",
+        "Braided rope",
+        "Workshop cleaning cloths",
+        "Upcycling"
+      ],
+      "missingInformation": [
+        "Laboratory fibre composition verification",
+        "GSM / fabric weight",
+        "Material condition and visible defects - image unavailable",
+        "Peach finish chemical composition and safety data",
+        "Fabric dimensions, roll lengths and quantity verification",
+        "Prior use history and storage conditions"
+      ]
+    },
+    "evidenceGovernanceNote": "Optical & text observations tagged REPORTED/ESTIMATED per ISO 1833 & ISO 3801 laboratory verification mandate. Photographic bytes withheld locally."
+  }
+}

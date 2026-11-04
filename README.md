@@ -1,10 +1,11 @@
-# SUZARCHI — Meta Global AI Developer Hackathon 2026
+# SUZARCHI (சுழற்சி) — Meta Global AI Developer Hackathon 2026
 
 **One Material. Multiple Possibilities.**
+*Named after the Tamil word **சுழற்சி** (pronounced **Suzharchi**), meaning **"Cyclical Rotation"**.*
 
 ## Project Overview
 
-SUZARCHI explores how AI can help businesses discover practical reuse opportunities for surplus materials, beginning with textiles.
+SUZARCHI explores how AI can help businesses discover practical, compliant reuse opportunities for industrial surplus materials, grounded in the textile manufacturing hub of **Tiruppur, Tamil Nadu**—the global pioneer in 100% Zero Liquid Discharge (ZLD) water recycling and pre-consumer textile waste valorisation.
 
 Textile manufacturers often have leftover fabric, yarn, garment offcuts, trims, and other materials that may still have commercial value. Identifying suitable next uses requires understanding the material, its properties, the requirements of potential applications, and the checks needed before reuse.
 
@@ -53,14 +54,16 @@ SUZARCHI is a separate, long-term product initiative. Existing planning document
 **Milestone:** Final Release & Verified Hackathon Implementation
 
 The repository implements a fully functional Next.js 14 web application:
-- **Material Discovery & Origin:** Verified 300 kg lot (`mat-001`) from Tiruppur, Tamil Nadu.
-- **AI-Assisted Intake (Meta Model API):** Server-side proxy (`/api/meta-ai/extract`) targeting `https://api.meta.ai/v1/chat/completions` using Bearer authentication and domain-tuned prompts. Transmits descriptive text metadata only with zero photographic bytes uploaded. Operates with local deterministic fallback when unconfigured, protecting user privacy and enforcing a strict $5 testing budget ceiling.
-- **Material Passport:** Aligned with EU Digital Product Passport (DPP) data syntax and 4-tier evidence status governance (`CONFIRMED`, `REPORTED`, `ESTIMATED`, `UNKNOWN`).
-- **4D Circular Compatibility:** Evaluates 11 destination families across 4 decision dimensions (Technical, Safety, Evidence, Commercial) with deterministic hard gates blocking hazardous pathways.
+- **Material Discovery & Origin:** Verified 300 kg lot of **Pink Ribbed Corduroy Fabric** (`mat-001`, batch `PCB-2026-IN-42`) from Tiruppur, Tamil Nadu (with Navy single jersey preserved as secondary fixture `mat-001-navy`).
+- **AI-Assisted Intake (Meta Model API):** Server-side proxy (`/api/meta-ai/extract`) targeting `https://api.meta.ai/v1/chat/completions` using Bearer authentication and domain-tuned prompts. Validated with Meta Muse Spark 1.3 under Phase 1.1/1.2 evidence hardening. Transmits descriptive text metadata only with zero photographic bytes uploaded. Operates with local deterministic fallback when unconfigured, protecting user privacy and enforcing a strict $5 testing budget ceiling.
+- **Evidence Governance & Safety Gate:** Enforces 4-tier evidence model (`CONFIRMED`, `REPORTED`, `ESTIMATED`, `UNKNOWN`). Missing weight strictly remains `null` GSM. Unverified chemical safety (`isControlledOrHazardous: null`) triggers a mandatory precautionary safety gate blocking intimate apparel pathways (0% viability) until accredited lab clearance.
+- **Material Passport:** Aligned with EU Digital Product Passport (DPP) data syntax (`urn:dpp:suzarchi:in:mat-001`), batch QR code issuance, and custody tracking.
+- **4D Circular Compatibility:** Evaluates 11 destination families across 4 decision dimensions (Technical, Safety, Evidence, Commercial) with deterministic hard gates.
 - **Simulated Laboratory Verification Desk:** Demonstrates educational review workflow modelled on ISO/IEC 17025 parameters; maintains unverified claims as `REPORTED` with SHA-256 audit logging.
-- **Global Analytics & Regional Circular Intelligence:** Interactive 6-continent intelligence covering 17 circular hubs and Basel Convention non-hazardous trade corridor models.
+- **Global Analytics & Regional Circular Intelligence:** Interactive 6-continent intelligence covering 17 circular hubs and Basel Convention Annex IX non-hazardous trade corridor models.
 - **B2B RFQ Trade Desk:** In-memory local RFQ drafting without external dispatch.
-- **Scope 3 GHG Accounting:** Modelled cradle-to-gate calculations based on GHG Protocol standards (19.8 tCO₂e avoided and 108,000 L water saved for the 2,400 kg facility allocation).
+- **Scope 3 GHG Accounting:** Modelled cradle-to-gate calculations based on GHG Protocol standards (19.8 tCO₂e avoided and 108,000 L water saved for the facility allocation).
+- **Demonstration Video:** 175-second broadcast demonstration (`docs/release/SUZARCHI_Meta_Hackathon_Final_Demo.mp4`) in Full HD 1080p @ 30 fps with authentic Indian English voiceover (`Microsoft Heera`) and Tiruppur Zero Liquid Discharge / waste valorisation intro.
 
 ## Getting Started
 

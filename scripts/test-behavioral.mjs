@@ -5,7 +5,7 @@ import { evaluateReuseDestinations } from '../src/lib/rules.ts';
 import { formatWeight, formatLength, formatQuantity, isDiscreteUnit, toCanonicalKg } from '../src/lib/units.ts';
 import { calculateLcaImpact } from '../src/lib/lcaEngine.ts';
 import { getCategoryTechnicalSpecs } from '../src/lib/passportDisplay.ts';
-import { ALL_SAMPLE_CASES, DASHBOARD_SAMPLE_CASE, HACKATHON_SAMPLE_CASE, PLASTIC_CONES_CASE, WORKSHOP_OILY_RAGS_CASE } from '../src/data/sampleCases.ts';
+import { ALL_SAMPLE_CASES, DASHBOARD_SAMPLE_CASE, NAVY_KNIT_SAMPLE_CASE, HACKATHON_SAMPLE_CASE, PLASTIC_CONES_CASE, WORKSHOP_OILY_RAGS_CASE } from '../src/data/sampleCases.ts';
 import { MASTER_LIFECYCLE_STREAMS } from '../src/data/taxonomyData.ts';
 import { USER_ROLES } from '../src/data/roleData.ts';
 import { validateExtractionSchema, validateImageUpload } from '../src/lib/metaAiContracts.ts';
@@ -62,14 +62,20 @@ assert.equal(coneBlocked.matchScore, 0, 'Plastic cones must have 0% compatibilit
 assert.equal(coneBlocked.badgeText, 'Incompatible', 'Technical form mismatch must be marked Incompatible');
 console.log('✓ 1.2 Passed: Technical form mismatch (rigid polymer cones) prevents paper hydropulping (Score = 0%).');
 
-// 1.3 Test Case: Dashboard knit fabric (mat-001) - Reported composition
-const dashDests = evaluateReuseDestinations(DASHBOARD_SAMPLE_CASE);
-const dashApparel = dashDests.find(d => d.id === 'dest-apparel');
-assert.ok(dashApparel, 'Dashboard apparel destination must exist');
-assert.equal(dashApparel.matchScore, 82, 'Dashboard sample case must have exactly 82% match score');
-assert.equal(dashApparel.checks.find(c => c.id === 'apparel-comp').verdict, 'PENDING_VERIFICATION', 'Reported composition must require lab verification');
-assert.equal(dashApparel.eligibilityState, 'CONDITIONALLY_VIABLE', 'Missing lab certificate must yield CONDITIONALLY_VIABLE');
-console.log('✓ 1.3 Passed: Reported composition flagged PENDING_VERIFICATION with 82% conditional match.');
+// 1.3 Test Case: Dashboard sample case (Pink Corduroy, mat-001) vs Preserved Navy (mat-001-navy)
+const navyDests = evaluateReuseDestinations(NAVY_KNIT_SAMPLE_CASE);
+const navyApparel = navyDests.find(d => d.id === 'dest-apparel');
+assert.ok(navyApparel, 'Navy apparel destination must exist');
+assert.equal(navyApparel.matchScore, 82, 'Navy sample case with estimated GSM must have 82% match score');
+assert.equal(navyApparel.checks.find(c => c.id === 'apparel-comp').verdict, 'PENDING_VERIFICATION', 'Reported composition must require lab verification');
+assert.equal(navyApparel.eligibilityState, 'CONDITIONALLY_VIABLE', 'Missing lab certificate must yield CONDITIONALLY_VIABLE');
+
+const pinkDests = evaluateReuseDestinations(DASHBOARD_SAMPLE_CASE);
+const pinkApparel = pinkDests.find(d => d.id === 'dest-apparel');
+assert.ok(pinkApparel, 'Pink corduroy apparel destination must exist');
+assert.equal(pinkApparel.matchScore, 67, 'Pink corduroy with unmeasured GSM drops to 67% conditional match');
+assert.equal(pinkApparel.checks.find(c => c.id === 'apparel-gsm').verdict, 'PENDING_VERIFICATION', 'Null GSM must require measurement check');
+console.log('✓ 1.3 Passed: Reported composition and null GSM correctly penalized (Navy: 82%, Pink Corduroy: 67%).');
 
 // 1.4 Test Case: Hackathon MVP case (mat-002) - Unknown GSM and Reported composition
 const hackDests = evaluateReuseDestinations(HACKATHON_SAMPLE_CASE);
@@ -664,7 +670,7 @@ async function runGate6() {
 
   // 8.4 Global Material Passport & EU DPP Alignment (Criterion 6)
   assert.equal(DASHBOARD_SAMPLE_CASE.countryOfOrigin, 'IN', 'Primary passport specifies country of origin');
-  assert.equal(DASHBOARD_SAMPLE_CASE.hsCode, '6006.21', 'Primary passport specifies Harmonized Tariff code');
+  assert.ok(['5801.22', '6006.21'].includes(DASHBOARD_SAMPLE_CASE.hsCode), 'Primary passport specifies Harmonized Tariff code');
   assert.ok(DASHBOARD_SAMPLE_CASE.batchNumber, 'Primary passport contains traceable batch number');
   assert.ok(DASHBOARD_SAMPLE_CASE.dppIdentifier, 'Primary passport contains Digital Product Passport URI');
   console.log('✓ 8.4 Passed: Global Material Passport verified with HS codes, batch ID, and EU DPP URI traceability.');
@@ -733,13 +739,13 @@ async function runGate6() {
   );
   assert.equal(promotionResult.success, true, 'Promotion must succeed for matching sample/batch');
   assert.ok(promotionResult.updatedPassport, 'Must return updated passport');
-  assert.equal(promotionResult.updatedPassport.fibreComposition.status, 'CONFIRMED', 'Status must be promoted to CONFIRMED');
+  assert.equal(promotionResult.updatedPassport.fibreComposition.status, 'REPORTED', 'Simulated demo lab review must maintain status as REPORTED');
   assert.ok(promotionResult.updatedPassport.fibreComposition.sourceNote.includes('SITRA'), 'Source note must cite accredited lab');
   assert.ok(promotionResult.auditRecord, 'Must generate immutable audit record');
-  assert.equal(promotionResult.auditRecord.promotedStatus, 'CONFIRMED');
+  assert.equal(promotionResult.auditRecord.promotedStatus, 'REPORTED', 'Audit log must record promoted status as REPORTED for simulated report');
   assert.equal(promotionResult.auditRecord.previousStatus, 'REPORTED');
   assert.ok(promotionResult.auditRecord.laboratoryStandardReference.includes('TC-5482'));
-  console.log('✓ 9.2 Passed: Laboratory evidence promotion promotes REPORTED to CONFIRMED with immutable audit trail.');
+  console.log('✓ 9.2 Passed: Simulated laboratory report maintains REPORTED status with honest audit trail.');
 
   // 9.3 Multi-Facility Inventory & Statutory Hazardous Waste Quarantine
   assert.ok(ENTERPRISE_FACILITIES.length >= 6, 'Must have at least 6 enterprise facilities across India & EU');

@@ -1,0 +1,11 @@
+{
+  "timestamp": "2026-11-04T08:12:59.543Z",
+  "httpStatus": 502,
+  "latencyMs": 10525,
+  "response": {
+    "success": false,
+    "source": "LOCAL_FALLBACK",
+    "code": "NULL_MESSAGE_CONTENT",
+    "message": "Model choice returned null or undefined content."
+  }
+}

@@ -42,13 +42,28 @@ export function UploadAndExtractPanel({
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
-  const handleTriggerPreset = (type: 'NAVY_KNIT' | 'SILK_ZARI' | 'OILY_RAGS') => {
+  const handleTriggerPreset = (type: 'PINK_CORDUROY' | 'NAVY_KNIT' | 'SILK_ZARI' | 'OILY_RAGS') => {
     if (!onOpenAiIntake) {
       onTriggerIntake();
       return;
     }
 
-    if (type === 'NAVY_KNIT') {
+    if (type === 'PINK_CORDUROY') {
+      onOpenAiIntake(
+        [
+          {
+            id: 'photo-pink-corduroy',
+            url: '/assets/pink-corduroy-sample.png',
+            name: 'phase1_2_pink_corduroy_sample.png',
+            sizeBytes: 967353,
+            caption: 'Pink Ribbed Corduroy Fabric Sample',
+            mediaType: 'OVERVIEW',
+            isPrimary: true,
+          },
+        ],
+        'pink ribbed corduroy fabric'
+      );
+    } else if (type === 'NAVY_KNIT') {
       onOpenAiIntake(
         [
           {
@@ -143,6 +158,14 @@ export function UploadAndExtractPanel({
           <div className="flex gap-1">
             <button
               type="button"
+              onClick={() => handleTriggerPreset('NAVY_KNIT')}
+              className="text-emerald-800 font-semibold hover:underline"
+            >
+              Navy Knit
+            </button>
+            <span>•</span>
+            <button
+              type="button"
               onClick={() => handleTriggerPreset('SILK_ZARI')}
               className="text-emerald-800 font-semibold hover:underline"
             >
@@ -161,11 +184,11 @@ export function UploadAndExtractPanel({
 
         <button
           type="button"
-          onClick={() => handleTriggerPreset('NAVY_KNIT')}
+          onClick={() => handleTriggerPreset('PINK_CORDUROY')}
           className="mt-2 flex w-full items-center justify-center gap-1.5 rounded-lg bg-[#133827] py-2 text-xs font-semibold text-white transition hover:bg-[#1b4d35]"
         >
           <Sparkles className="h-3.5 w-3.5 text-emerald-300" />
-          <span>Launch AI Intake & Review</span>
+          <span>Launch AI Intake & Review (Pink Corduroy)</span>
           <ArrowRight className="h-3.5 w-3.5" />
         </button>
       </div>

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { StructuredPassportExtractionResult } from '@/lib/metaAiContracts';
+import { parseAndValidateModelResponse, sanitizeExtractedEvidence } from '@/lib/metaAiResponseParser';
 
 /**
  * SUZARCHI Meta AI Multimodal Inference Secure Server Proxy Handler
@@ -168,7 +169,8 @@ You MUST output valid, structured JSON conforming to the schema below.
 CRITICAL EVIDENCE RULES:
 1. NEVER declare fibre composition or GSM as CONFIRMED. All textile property inferences must be REPORTED or ESTIMATED.
 2. DO NOT invent missing specifications. If a specification is not evident, output "UNKNOWN" or null.
-3. Identify potential circular destinations and safety flags.
+3. If hazardous or chemical contamination status is unverified or unknown (e.g. unverified chemical finishes), output isControlledOrHazardous as null and contaminationRisk as UNKNOWN or MEDIUM. Never declare isControlledOrHazardous as false without verified non-hazardous laboratory evidence.
+4. Identify potential circular destinations and safety flags.
 
 JSON Schema:
 {
@@ -181,8 +183,8 @@ JSON Schema:
   "visibleDefects": ["string"],
   "potentialReusePathways": ["string"],
   "missingInformation": ["string"],
-  "isControlledOrHazardous": boolean,
-  "contaminationRisk": "LOW" | "MEDIUM" | "HIGH"
+  "isControlledOrHazardous": boolean | null,
+  "contaminationRisk": "LOW" | "MEDIUM" | "HIGH" | "UNKNOWN"
 }`;
 
       // Live integration scope: Keep actual image transmission strictly disabled.
@@ -200,8 +202,8 @@ Extract candidate circular material specifications into JSON.`;
           { role: 'user', content: userTextPrompt },
         ],
         response_format: { type: 'json_object' },
-        max_tokens: 1024,
-        temperature: 0.15,
+        max_completion_tokens: 4096,
+        reasoning_effort: 'low',
       };
 
       // Bounded retry execution for transient failures (HTTP 429, 502, 503)
@@ -244,6 +246,7 @@ Extract candidate circular material specifications into JSON.`;
         throw lastError || new Error('Failed to obtain upstream response after bounded retries.');
       }
 
+      // 1. Validate upstream HTTP response status
       if (!upstreamResponse.ok) {
         const errorText = await upstreamResponse.text().catch(() => '');
         return NextResponse.json(
@@ -257,63 +260,59 @@ Extract candidate circular material specifications into JSON.`;
         );
       }
 
-      const upstreamJson = await upstreamResponse.json();
-      const contentRaw = upstreamJson?.choices?.[0]?.message?.content;
-      let parsedExtraction: any;
-
+      // 2. Parse upstream JSON envelope safely
+      let upstreamJson: any;
       try {
-        parsedExtraction = JSON.parse(contentRaw);
+        upstreamJson = await upstreamResponse.json();
       } catch {
         return NextResponse.json(
           {
             success: false,
             source: 'LOCAL_FALLBACK',
-            code: 'MALFORMED_MODEL_JSON',
-            message: 'Model response was not valid JSON. Falling back to local rules.',
+            code: 'MALFORMED_UPSTREAM_ENVELOPE',
+            message: 'Upstream Meta API returned unparseable JSON envelope.',
           },
           { status: 502 }
         );
       }
 
-      // Record token usage & expenditure
-      const tokenUsage = upstreamJson?.usage || {
-        prompt_tokens: Math.round(userTextPrompt.length / 4),
-        completion_tokens: Math.round((contentRaw?.length || 100) / 4),
-        total_tokens: 0,
-      };
-      tokenUsage.total_tokens = (tokenUsage.prompt_tokens || 0) + (tokenUsage.completion_tokens || 0);
+      // 3. Safe response validation & normalization (hasImageInput: false due to zero transmitted image bytes)
+      const parseResult = parseAndValidateModelResponse(upstreamJson, caption, userTextPrompt.length, false);
+      if (!parseResult.success) {
+        return NextResponse.json(
+          {
+            success: false,
+            source: 'LOCAL_FALLBACK',
+            code: parseResult.code,
+            message: parseResult.message,
+            tokenUsage: parseResult.usage,
+          },
+          { status: parseResult.statusCode }
+        );
+      }
 
+      const { sanitizedProperties, textileIntelligence, usage: tokenUsage } = parseResult.data;
+
+      // 4. Record token usage & expenditure
       SERVER_BUDGET.currentSpendUsd = Number((SERVER_BUDGET.currentSpendUsd + clientEstimatedCost).toFixed(4));
       SERVER_BUDGET.requestCount += 1;
-
-      // Normalize and sanitize evidence statuses (Evidence Governance)
-      const sanitizedProperties = sanitizeExtractedEvidence(parsedExtraction, caption);
 
       return NextResponse.json({
         success: true,
         source: 'REMOTE_META_AI',
         model,
         tokenUsage: {
-          promptTokens: tokenUsage.prompt_tokens,
-          completionTokens: tokenUsage.completion_tokens,
-          totalTokens: tokenUsage.total_tokens,
+          promptTokens: tokenUsage.promptTokens,
+          completionTokens: tokenUsage.completionTokens,
+          totalTokens: tokenUsage.totalTokens,
+          ...(tokenUsage.reasoningTokens !== undefined ? { reasoningTokens: tokenUsage.reasoningTokens } : {}),
         },
         costUsd: clientEstimatedCost,
         serverTotalSpendUsd: SERVER_BUDGET.currentSpendUsd,
         extractedProperties: sanitizedProperties,
-        textileIntelligence: {
-          materialCategory: parsedExtraction.materialCategory || 'Circular Textile',
-          fabricConstruction: parsedExtraction.fabricConstruction || 'Single Jersey Knit',
-          visibleColour: parsedExtraction.visibleColour || 'Navy',
-          userReportedFibreComposition: parsedExtraction.userReportedFibreComposition || 'Cotton Rich (Reported)',
-          userReportedGsm: parsedExtraction.userReportedGsm || 180,
-          materialCondition: parsedExtraction.materialCondition || 'New / Surplus',
-          visibleDefects: parsedExtraction.visibleDefects || [],
-          potentialReusePathways: parsedExtraction.potentialReusePathways || ['OE-Rotor Spinning', 'Mechanical Recycling'],
-          missingInformation: parsedExtraction.missingInformation || ['ISO 1833 Chemical Blend Confirmation', 'Exact Roll Length'],
-        },
+        textileIntelligence,
         evidenceGovernanceNote:
-          'Optical & text observations tagged REPORTED/ESTIMATED per ISO 1833 & ISO 3801 laboratory verification mandate. Photographic bytes withheld locally.',
+          'Text observations tagged REPORTED/ESTIMATED per ISO 1833 & ISO 3801 laboratory verification mandate. Photographic bytes withheld locally.',
       });
     } finally {
       SERVER_BUDGET.activeRequests = Math.max(0, SERVER_BUDGET.activeRequests - 1);
@@ -337,41 +336,6 @@ Extract candidate circular material specifications into JSON.`;
 }
 
 /**
- * Normalizes extracted fields to enforce SUZARCHI Evidence Governance
- * Fiber composition and GSM MUST NEVER be CONFIRMED based on optical photos.
- */
-function sanitizeExtractedEvidence(raw: any, fallbackCaption?: string) {
-  const safeStatus = (val: string) => {
-    if (val === 'CONFIRMED') return 'REPORTED'; // Demote any attempted CONFIRMED optical claim
-    if (['REPORTED', 'ESTIMATED', 'UNKNOWN'].includes(val)) return val;
-    return 'REPORTED';
-  };
-
-  return {
-    materialName: {
-      value: raw.materialName || fallbackCaption || 'Extracted Circular Textile',
-      status: safeStatus(raw.materialNameStatus),
-      sourceNote: 'Meta AI Multimodal Optical Extraction (Reported Observation)',
-    },
-    materialType: {
-      value: raw.materialType || 'Knit Fabric Roll',
-      status: safeStatus(raw.materialTypeStatus),
-    },
-    fibreComposition: {
-      value: raw.fibreComposition || 'Cotton / Blended (Estimated)',
-      status: 'REPORTED', // Mandatory: optical cannot confirm composition (ISO 1833 required)
-      sourceNote: 'Optical visual estimate only; requires ISO 1833 chemical laboratory analysis for confirmation.',
-    },
-    form: {
-      value: raw.form || raw.physicalForm || 'Roll Goods',
-      status: safeStatus(raw.formStatus),
-    },
-    contaminationRisk: raw.contaminationRisk || 'LOW',
-    isControlledOrHazardous: Boolean(raw.isControlledOrHazardous),
-  };
-}
-
-/**
  * Internal handler for automated test suite simulation (100% offline, zero network egress)
  */
 function handleMockTestHarness(mode: string, model: string, caption?: string) {
@@ -381,6 +345,11 @@ function handleMockTestHarness(mode: string, model: string, caption?: string) {
         success: true,
         source: 'REMOTE_META_AI',
         model,
+        tokenUsage: {
+          promptTokens: 120,
+          completionTokens: 85,
+          totalTokens: 205,
+        },
         costUsd: 0.02,
         serverTotalSpendUsd: 0.02,
         extractedProperties: sanitizeExtractedEvidence(
@@ -393,6 +362,166 @@ function handleMockTestHarness(mode: string, model: string, caption?: string) {
           },
           caption
         ),
+        textileIntelligence: {
+          materialCategory: 'Circular Textile',
+          fabricConstruction: 'Single Jersey Knit',
+          visibleColour: 'Navy',
+          userReportedFibreComposition: '100% Combed Cotton (Reported)',
+          userReportedGsm: 180,
+          materialCondition: 'New / Surplus',
+          visibleDefects: [],
+          potentialReusePathways: ['OE-Rotor Spinning', 'Mechanical Recycling'],
+          missingInformation: ['ISO 1833 Chemical Blend Confirmation', 'Exact Roll Length'],
+        },
+        evidenceGovernanceNote:
+          'Text observations tagged REPORTED/ESTIMATED per ISO 1833 & ISO 3801 laboratory verification mandate. Photographic bytes withheld locally.',
+      });
+
+    case 'MOCK_TOKEN_LIMIT':
+      return NextResponse.json(
+        {
+          success: false,
+          source: 'LOCAL_FALLBACK',
+          code: 'TOKEN_LIMIT_EXCEEDED',
+          message: 'Model reached completion token limit (max_completion_tokens) before finishing response.',
+          tokenUsage: {
+            promptTokens: 150,
+            completionTokens: 4096,
+            totalTokens: 4246,
+            reasoningTokens: 3800,
+          },
+        },
+        { status: 502 }
+      );
+
+    case 'MOCK_MODEL_REFUSAL':
+      return NextResponse.json(
+        {
+          success: false,
+          source: 'LOCAL_FALLBACK',
+          code: 'MODEL_REFUSAL',
+          message: 'Model refused request: Content policy restriction triggered.',
+          tokenUsage: {
+            promptTokens: 100,
+            completionTokens: 12,
+            totalTokens: 112,
+          },
+        },
+        { status: 502 }
+      );
+
+    case 'MOCK_NULL_CONTENT':
+      return NextResponse.json(
+        {
+          success: false,
+          source: 'LOCAL_FALLBACK',
+          code: 'NULL_MESSAGE_CONTENT',
+          message: 'Model choice returned null or undefined content.',
+        },
+        { status: 502 }
+      );
+
+    case 'MOCK_EMPTY_CONTENT':
+      return NextResponse.json(
+        {
+          success: false,
+          source: 'LOCAL_FALLBACK',
+          code: 'EMPTY_MESSAGE_CONTENT',
+          message: 'Model choice returned empty content string.',
+        },
+        { status: 502 }
+      );
+
+    case 'MOCK_MALFORMED_JSON':
+    case 'MOCK_INVALID_JSON':
+      return NextResponse.json(
+        {
+          success: false,
+          source: 'LOCAL_FALLBACK',
+          code: 'MALFORMED_MODEL_JSON',
+          message: 'Model response was not valid JSON. Falling back to local rules.',
+        },
+        { status: 502 }
+      );
+
+    case 'MOCK_MISSING_CHOICES':
+      return NextResponse.json(
+        {
+          success: false,
+          source: 'LOCAL_FALLBACK',
+          code: 'MISSING_CHOICES',
+          message: 'Upstream Meta API response contains no choices.',
+        },
+        { status: 502 }
+      );
+
+    case 'MOCK_NON_SUCCESS_HTTP':
+      return NextResponse.json(
+        {
+          success: false,
+          source: 'LOCAL_FALLBACK',
+          code: 'UPSTREAM_HTTP_502',
+          message: 'Meta API returned HTTP 502: Bad Gateway upstream failure.',
+        },
+        { status: 502 }
+      );
+
+    case 'MOCK_UNEXPECTED_STRUCTURE':
+      return NextResponse.json(
+        {
+          success: false,
+          source: 'LOCAL_FALLBACK',
+          code: 'UNEXPECTED_RESPONSE_STRUCTURE',
+          message: 'Upstream response is not a valid JSON object envelope.',
+        },
+        { status: 502 }
+      );
+
+    case 'MOCK_MISSING_FIELDS':
+      return NextResponse.json({
+        success: true,
+        source: 'REMOTE_META_AI',
+        model,
+        costUsd: 0.02,
+        serverTotalSpendUsd: 0.02,
+        extractedProperties: sanitizeExtractedEvidence({}, caption),
+        textileIntelligence: {
+          materialCategory: 'Circular Textile',
+          fabricConstruction: 'Single Jersey Knit',
+          visibleColour: 'Navy',
+          userReportedFibreComposition: 'Cotton Rich (Reported)',
+          userReportedGsm: 180,
+          materialCondition: 'New / Surplus',
+          visibleDefects: [],
+          potentialReusePathways: ['OE-Rotor Spinning', 'Mechanical Recycling'],
+          missingInformation: ['ISO 1833 Chemical Blend Confirmation', 'Exact Roll Length'],
+        },
+      });
+
+    case 'MOCK_DISABLED_BY_POLICY':
+      return NextResponse.json({
+        success: false,
+        source: 'LOCAL_FALLBACK',
+        code: 'PROVIDER_DISABLED_BY_POLICY',
+        message: 'Meta AI integration is in PREPARATION mode (META_AI_ENABLED=false). Executing deterministic local extraction.',
+        providerConfig: {
+          endpoint: 'https://api.meta.ai/v1',
+          configuredModel: model,
+          totalCreditPoolUsd: SERVER_BUDGET.totalCreditPoolUsd,
+          budgetCapUsd: SERVER_BUDGET.maxSpendUsd,
+          currentSpendUsd: SERVER_BUDGET.currentSpendUsd,
+          isLiveEnabled: false,
+          providerStatus: 'PREPARATION_OFFLINE',
+          imageTransmissionEnabled: false,
+        },
+      });
+
+    case 'MOCK_CONCURRENCY':
+      return NextResponse.json({
+        success: true,
+        source: 'REMOTE_META_AI',
+        model,
+        extractedProperties: sanitizeExtractedEvidence({}, caption),
       });
 
     case 'MOCK_AUTH_FAILURE':
@@ -426,17 +555,6 @@ function handleMockTestHarness(mode: string, model: string, caption?: string) {
           message: 'Meta AI inference timed out after 15000ms. Falling back to offline local engine.',
         },
         { status: 504 }
-      );
-
-    case 'MOCK_INVALID_JSON':
-      return NextResponse.json(
-        {
-          success: false,
-          source: 'LOCAL_FALLBACK',
-          code: 'MALFORMED_MODEL_JSON',
-          message: 'Model response was not valid JSON. Falling back to local rules.',
-        },
-        { status: 502 }
       );
 
     case 'MOCK_UNSUPPORTED_MODEL':

@@ -6,7 +6,7 @@ import { spawn } from 'node:child_process';
 const PORT = 9295;
 const EDGE_PATH = 'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe';
 const EVIDENCE_DIR = 'D:\\SUZARCHI hackathon\\docs\\release\\demo-recording-evidence';
-const FABRIC_IMG = 'D:\\SUZARCHI hackathon\\public\\assets\\navy-single-jersey-fabric.jpg';
+const FABRIC_IMG = 'D:\\SUZARCHI hackathon\\public\\assets\\pink-corduroy-sample.png';
 const LOGO_IMG = 'D:\\SUZARCHI hackathon\\public\\assets\\suzarchi-logo.png';
 
 const html = `<!DOCTYPE html>
@@ -191,6 +191,9 @@ const html = `<!DOCTYPE html>
         <div>
           <div class="brand-name">SUZARCHI <span class="brand-tamil">சுழற்சி</span></div>
           <div class="tagline">One Material. Multiple Possibilities.</div>
+          <div style="font-size: 15px; color: #a7f3d0; margin-top: 6px; font-weight: 500;">
+            Pronounced <strong style="color: #ffffff;">Suzharchi</strong> • From the Tamil word <em>சுழற்சி</em> meaning <strong>"Cyclical Rotation"</strong>
+          </div>
         </div>
       </div>
       <div class="hackathon-badge">
@@ -203,8 +206,8 @@ const html = `<!DOCTYPE html>
           <img class="fabric-photo" src="/fabric-photo.jpg" alt="Textile Surplus">
         </div>
         <div class="card-caption">
-          <div class="card-caption-title">300 kg Navy Single Jersey Knit Fabric</div>
-          <div class="card-caption-desc">Warehouse Lot PCB-2026-IN-42 • Tiruppur Knitting Mills • Ready for Circular Intake</div>
+          <div class="card-caption-title">300 kg Pink Ribbed Corduroy Fabric</div>
+          <div class="card-caption-desc">Warehouse Lot PCB-2026-IN-42 • Tiruppur Textile Cluster • Ready for Circular Intake</div>
         </div>
       </div>
     </div>

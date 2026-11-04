@@ -57,7 +57,7 @@ export interface MaterialPassport {
   absorbencyRating?: PropertyRecord<string | null>;
   isHardwareFree?: PropertyRecord<boolean | null>;
   cleanlinessRating?: PropertyRecord<string | null>;
-  isControlledOrHazardous?: boolean;
+  isControlledOrHazardous?: boolean | null;
   isUserCreated?: boolean;
 
   // G2 Global Passport & EU DPP Traceability Extensions

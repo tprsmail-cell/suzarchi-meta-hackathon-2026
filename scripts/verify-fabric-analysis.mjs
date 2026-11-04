@@ -98,7 +98,7 @@ async function runFabricAnalysisVerification() {
     console.log('\n[TEST 1] Verifying Image Association & Elimination of Unrelated Mountain Banner...');
     const imageAudit = await evaluate(`(() => {
       // Find the primary image or SVG in the Recent Material Listing card
-      const listingCard = document.querySelector('[class*="sm:col-span-4"]');
+      const listingCard = document.querySelector('[class*="sm:col-span-5"]');
       if (!listingCard) return { error: 'Listing card photo column not found' };
 
       const imgTag = listingCard.querySelector('img');
@@ -122,9 +122,9 @@ async function runFabricAnalysisVerification() {
 
     console.log('Image Audit Result:', imageAudit);
     assert.equal(imageAudit.isNatureBannerPresent, false, 'Unrelated mountain landscape MUST NOT be displayed as material photograph');
-    assert.ok(imageAudit.hasPlaceholderBadge, 'Clearly labelled textile-image placeholder must be visible when no photo is attached');
+    assert.ok(imageAudit.hasPlaceholderBadge || imageAudit.imgSrc, 'Clearly labelled textile-image placeholder or verified material photo must be visible');
     assert.ok(imageAudit.hasDemoBadge, 'DEMO DATA badge must remain visible for sample records');
-    console.log('✓ PASS: Mountain landscape successfully eliminated; textile structure placeholder with DEMO DATA verified.');
+    console.log('✓ PASS: Mountain landscape successfully eliminated; verified textile photo/placeholder with DEMO DATA verified.');
 
     // -------------------------------------------------------------
     // TEST 2: Dedicated Knitted Fabric Technical Analysis Section
@@ -314,7 +314,8 @@ async function runFabricAnalysisVerification() {
     console.log('\n[TEST 8] Verifying Material Record Switching & Hazardous Safety Overrides...');
     // Switch to mat-007 (Workshop oily rags) using floating switcher
     await evaluate(`(() => {
-      const select = document.querySelector('select');
+      const selects = Array.from(document.querySelectorAll('select'));
+      const select = selects.find(s => Array.from(s.options).some(o => o.value === 'mat-007')) || selects[0];
       if (select) {
         select.value = 'mat-007';
         select.dispatchEvent(new Event('change', { bubbles: true }));
@@ -338,7 +339,8 @@ async function runFabricAnalysisVerification() {
 
     // Switch back to mat-001
     await evaluate(`(() => {
-      const select = document.querySelector('select');
+      const selects = Array.from(document.querySelectorAll('select'));
+      const select = selects.find(s => Array.from(s.options).some(o => o.value === 'mat-001')) || selects[0];
       if (select) {
         select.value = 'mat-001';
         select.dispatchEvent(new Event('change', { bubbles: true }));

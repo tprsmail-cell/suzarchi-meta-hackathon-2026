@@ -35,7 +35,7 @@ export interface TaxonomySubcategory {
   contaminationRisks: string[];
   evidenceRequirements: string[];
   candidateDestinations: string[];
-  isControlledOrHazardous?: boolean;
+  isControlledOrHazardous?: boolean | null;
 }
 
 export interface LifecycleStream {

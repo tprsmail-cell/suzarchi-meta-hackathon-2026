@@ -95,7 +95,7 @@ export default function DashboardPage() {
   const [myRfqs, setMyRfqs] = useState<ActiveRfq[]>([
     {
       id: 'rfq-init-01',
-      targetLotTitle: 'Navy Cotton-Rich Knit Fabric (mat-001)',
+      targetLotTitle: 'Pink Ribbed Corduroy Fabric (mat-001)',
       companyName: 'Apex Circular Textiles Pvt Ltd',
       contactEmail: 'sourcing@apextextiles.in',
       quantityRequested: '300 kg',

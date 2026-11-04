@@ -4,6 +4,7 @@
  * Conforms to GHG Protocol Corporate Value Chain (Scope 3) Standard & ISO 14064-3
  */
 
+import crypto from 'crypto';
 import { MaterialPassport } from '../types/passport';
 import {
   GhgProtocolCategory,
@@ -49,15 +50,9 @@ export function calculateScope3GhgAccounting(
   const netAvoidedTons = Math.max(0, Number((grossVirginTons - (circularProcessingTons + transportTons)).toFixed(2)));
   const waterMegaLiters = Number(((quantityKg * ef.waterDisplacementLitersPerKg) / 1000000).toFixed(2));
 
-  // Deterministic 256-bit hash simulation
-  let hashSeed = 0;
-  const hashInput = `${passport.id}:${quantityKg}:${netAvoidedTons}:${category}`;
-  for (let i = 0; i < hashInput.length; i++) {
-    hashSeed = (hashSeed << 5) - hashSeed + hashInput.charCodeAt(i);
-    hashSeed |= 0;
-  }
-  const hex = Math.abs(hashSeed).toString(16).padStart(8, '0');
-  const certificateHash = `sha256:0x${hex}9a4b8c7d6e5f1029384756abcdef`;
+  // Genuine SHA-256 cryptographic digest of calculation parameters (Internal Verification Record)
+  const hashInput = `${passport.id}:${quantityKg}:${netAvoidedTons}:${category}:${ef.materialType}`;
+  const recordDigest = `sha256:0x${crypto.createHash('sha256').update(hashInput).digest('hex')}`;
 
   return {
     id: `ghg-${passport.id}-${Date.now().toString().slice(-4)}`,
@@ -72,10 +67,10 @@ export function calculateScope3GhgAccounting(
     netAvoidedEmissionsTonsCo2e: netAvoidedTons,
     waterSavingsMegaLiters: waterMegaLiters,
     emissionFactorRef: ef,
-    verificationStatus: 'THIRD_PARTY_CERTIFIED',
-    auditingBody: 'TÜV Rheinland Carbon Verification Services (ISO 14064-3)',
+    verificationStatus: 'UNVERIFIED_INTERNAL_MODEL',
+    auditingBody: 'SUZARCHI Internal Computation Engine (Uncertified Operational Model; Not Third-Party Audited)',
     verificationDate: new Date().toISOString().split('T')[0],
-    certificateHashSha256: certificateHash,
+    certificateHashSha256: recordDigest,
   };
 }
 

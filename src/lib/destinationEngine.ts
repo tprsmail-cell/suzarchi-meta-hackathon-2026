@@ -320,23 +320,78 @@ function evaluateSafetyDimension(
     }
   }
 
-  // 4. Default Cleanliness Check for General Textile Surplus
+  // 4. Cleanliness & Contamination Verification (DEF-001 & Phase 1.2: Precautionary Principle)
   if (!isBlocked && checks.length === 0) {
-    checks.push({
-      id: 'safety-cleanliness-pass',
-      name: 'Sanitary & Cleanliness Compliance',
-      status: 'SATISFIED',
-      evidenceStatus: passport.cleanlinessRating?.status || 'REPORTED',
-      finding: 'Visual review and supplier records confirm material is free from hazardous chemicals and biological contaminants',
-    });
+    const chemFinishText = (passport.chemicalFinishes?.value || '').toLowerCase();
+    const isSafetyUnverified =
+      passport.isControlledOrHazardous === null ||
+      (passport.cleanlinessRating && passport.cleanlinessRating.status === 'UNKNOWN') ||
+      (passport.contaminationStatus && passport.contaminationStatus.status === 'UNKNOWN') ||
+      (passport.chemicalFinishes && passport.chemicalFinishes.status === 'UNKNOWN') ||
+      contamText.includes('unknown') ||
+      contamText.includes('unverified') ||
+      chemFinishText.includes('unverified') ||
+      chemFinishText.includes('unknown') ||
+      notesText.includes('chemical safety not confirmed') ||
+      (notesText.includes('peach finish') && !notesText.includes('lab verified'));
+
+    const hasKnownCleanliness =
+      !isSafetyUnverified &&
+      ((passport.cleanlinessRating &&
+        passport.cleanlinessRating.status !== 'UNKNOWN' &&
+        passport.cleanlinessRating.value &&
+        passport.cleanlinessRating.value.trim().toUpperCase() !== 'UNKNOWN') ||
+      (passport.contaminationStatus &&
+        passport.contaminationStatus.status !== 'UNKNOWN' &&
+        passport.contaminationStatus.value &&
+        !['UNKNOWN', 'CONTAMINATED'].includes(passport.contaminationStatus.value.trim().toUpperCase())));
+
+    if (hasKnownCleanliness) {
+      checks.push({
+        id: 'safety-cleanliness-pass',
+        name: 'Sanitary & Cleanliness Compliance',
+        status: 'SATISFIED',
+        evidenceStatus: passport.cleanlinessRating?.status || passport.contaminationStatus?.status || 'REPORTED',
+        finding: 'Visual review and supplier records confirm material is free from hazardous chemicals and biological contaminants',
+      });
+    } else {
+      // DEF-001: Missing or unknown contamination evidence must NEVER receive automatic clearance
+      checks.push({
+        id: 'safety-cleanliness-unverified',
+        name: 'Sanitary & Cleanliness Compliance',
+        status: 'PENDING_VERIFICATION',
+        evidenceStatus: 'UNKNOWN',
+        finding: 'Contamination and chemical safety data missing or unverified; visual inspection and sanitization audit required before clearance.',
+        requiredEvidence: 'Supplier sanitary declaration, wash lot certificate, or accredited chemical purity screening',
+        isHardGate: false,
+      });
+    }
+  }
+
+  const hasPendingSafety = checks.some((c) => c.status === 'PENDING_VERIFICATION');
+
+  if (isBlocked) {
+    return {
+      status: 'BLOCKED',
+      score: 0,
+      summary: `HARD SAFETY FAILURE: ${restrictionReasons.join('; ')}`,
+      checks,
+    };
+  }
+
+  if (hasPendingSafety) {
+    return {
+      status: 'VERIFICATION_REQUIRED',
+      score: 45, // Revision 2.1 threshold: strictly <= 50 for unknown-evidence case
+      summary: 'INSUFFICIENT SAFETY EVIDENCE: Chemical and contamination status unverified. Facility sanitization and chemical review required.',
+      checks,
+    };
   }
 
   return {
-    status: isBlocked ? 'BLOCKED' : 'PASSED',
-    score: isBlocked ? 0 : 100,
-    summary: isBlocked
-      ? `HARD SAFETY FAILURE: ${restrictionReasons.join('; ')}`
-      : 'Material passes all biological, petroleum, chemical, and foreign object safety criteria.',
+    status: 'PASSED',
+    score: 100,
+    summary: 'Material passes all biological, petroleum, chemical, and foreign object safety criteria.',
     checks,
   };
 }
@@ -587,17 +642,22 @@ export function evaluateDestinationForPassport(
     colorTheme = 'mauve';
     eligibilityReason = 'Core material properties missing; laboratory identification required';
   }
-  // VERIFICATION REQUIRED (Evidence gap on critical property)
-  else if (evidence.status === 'VERIFICATION_REQUIRED' || passport.fibreComposition.status !== 'CONFIRMED') {
+  // VERIFICATION REQUIRED (Evidence gap on critical property or unverified safety)
+  else if (safety.status === 'VERIFICATION_REQUIRED' || evidence.status === 'VERIFICATION_REQUIRED' || passport.fibreComposition.status !== 'CONFIRMED') {
     recommendationStatus = 'VERIFICATION_REQUIRED';
     // Dynamic weighted score: Tech 40%, Evidence 30%, Comm 20%, Regional 10%
     const computed = Math.round(
       technical.score * 0.4 + evidence.score * 0.3 + commercial.score * 0.2 + (regional.transportFeasibility === 'HIGH' ? 10 : 5)
     );
-    matchScore = Math.min(84, Math.max(30, computed));
+    // DEF-001 / Revision 2.1: If safety verification is required, match score is capped at 50
+    matchScore = safety.status === 'VERIFICATION_REQUIRED'
+      ? Math.min(50, Math.max(30, computed))
+      : Math.min(84, Math.max(30, computed));
     badgeText = 'Conditional Match';
     colorTheme = index === 1 ? 'green' : 'blue';
-    eligibilityReason = evidence.checks.find((c) => c.status === 'PENDING_VERIFICATION')?.finding || 'Laboratory certification required';
+    eligibilityReason = safety.status === 'VERIFICATION_REQUIRED'
+      ? safety.summary
+      : (evidence.checks.find((c) => c.status === 'PENDING_VERIFICATION')?.finding || 'Laboratory certification required');
   }
   // CONDITIONALLY ELIGIBLE
   else if (technical.status === 'CONDITIONALLY_PASSED' || commercial.status === 'CONDITIONALLY_PASSED') {

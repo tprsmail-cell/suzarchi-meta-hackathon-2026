@@ -7,6 +7,7 @@ const PORT = 9280;
 const EDGE_PATH = 'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe';
 const EVIDENCE_DIR = 'D:\\SUZARCHI hackathon\\docs\\release\\demo-recording-evidence';
 const OUTPUT_VIDEO_MP4 = 'D:\\SUZARCHI hackathon\\docs\\release\\SUZARCHI_Meta_Hackathon_Final_Demo.mp4';
+const OUTPUT_VIDEO_ALIGNED = 'D:\\SUZARCHI hackathon\\docs\\release\\SUZARCHI_Meta_Hackathon_Aligned_Demo.mp4';
 const OUTPUT_VIDEO_WEBM = 'D:\\SUZARCHI hackathon\\docs\\release\\SUZARCHI_Meta_Hackathon_Final_Demo.webm';
 const OUTPUT_VIDEO_LEGACY = 'D:\\SUZARCHI hackathon\\docs\\release\\SUZARCHI-Hackathon-Official-3Min-Demonstration.webm';
 const ARTIFACT_DIR = 'C:\\Users\\Merch\\.gemini\\antigravity\\brain\\bd2de537-0962-45e2-a6f8-f3193ee33f5e';
@@ -16,7 +17,7 @@ const STEPS = [
     step: 0,
     pillLabel: 'Opening: The Opportunity',
     title: 'Turning Textile Surplus into Global Opportunities',
-    sub: 'SUZARCHI (சுழற்சி) — One Material. Multiple Possibilities. — Meta AI Hackathon 2026',
+    sub: 'SUZARCHI (சுழற்சி) — Pronounced Suzharchi ("Cyclical Rotation") — Meta AI Hackathon 2026',
     img: '/img/DEMO-STEP-00-opening.png',
     audio: '/audio/step-00-opening.wav',
   },
@@ -24,7 +25,7 @@ const STEPS = [
     step: 1,
     pillLabel: 'Step 1 / 8: Origin',
     title: '1. Material Discovery & Origin (Tiruppur, India)',
-    sub: '300 kg Navy Single Jersey Knit Fabric (PCB-2026-IN-42) in 2,400 kg Facility Allocation',
+    sub: '300 kg Pink Ribbed Corduroy Fabric (PCB-2026-IN-42) • Tiruppur Textile Cluster',
     img: '/img/DEMO-STEP-01-material-discovery.png',
     audio: '/audio/step-01-discovery.wav',
   },
@@ -32,7 +33,7 @@ const STEPS = [
     step: 2,
     pillLabel: 'Step 2 / 8: AI Intake',
     title: '2. AI Intake & Meta AI Architecture Preparation',
-    sub: 'Meta Llama 3.2 Vision Schema — Deterministic Local Mode (META_AI_ENABLED=false) — Zero Spend',
+    sub: 'Multimodal Vision Extraction • Unverified GSM & Composition Flagged for Review',
     img: '/img/DEMO-STEP-02-ai-assisted-intake.png',
     audio: '/audio/step-02-ai-intake.wav',
   },
@@ -48,7 +49,7 @@ const STEPS = [
     step: 4,
     pillLabel: 'Step 4 / 8: 4D Match',
     title: '4. 4D Circular Compatibility & Mandatory Safety Gate',
-    sub: '11 Destination Families — Model Output Scores — Hazardous Pathways Barred',
+    sub: '11 Destination Families — Upcycled Craft Qualified — Intimate Apparel Blocked by Safety Gate',
     img: '/img/DEMO-STEP-04-circular-compatibility.png',
     audio: '/audio/step-04-compatibility.wav',
   },
@@ -83,6 +84,14 @@ const STEPS = [
     sub: 'GHG Protocol Standard — 19.8 tCO2e Avoided — 108,000 L Water Saved (2,400 kg Facility Allocation)',
     img: '/img/DEMO-STEP-08-circular-impact.png',
     audio: '/audio/step-08-scope3-impact.wav',
+  },
+  {
+    step: 9,
+    pillLabel: 'Tiruppur & Thank You',
+    title: 'Grounded in Tiruppur: Global Zero Liquid Discharge & Waste Benchmark',
+    sub: '100% ZLD • 95% Water Recycled • Pre-Consumer Waste Valorisation • Thank You from SUZARCHI',
+    img: '/img/DEMO-STEP-09-tiruppur-thankyou.png',
+    audio: '/audio/step-09-tiruppur-thankyou.wav',
   },
 ];
 
@@ -184,7 +193,7 @@ const htmlContent = `<!DOCTYPE html>
       function drawFrame() {
         const now = audioCtx.currentTime;
         const currentData = loadedData[currentStepIdx];
-        const stepDuration = (currentStepIdx === loadedData.length - 1) ? (currentData.aBuf.duration + 0.1) : (currentData.aBuf.duration + 0.6); // precise broadcast pacing with zero trailing lag
+        const stepDuration = (currentStepIdx === loadedData.length - 1) ? (currentData.aBuf.duration + 0.1) : (currentData.aBuf.duration + 0.15); // precise broadcast pacing with zero trailing lag
 
         // Check if step completed
         if (now - stepStartTime >= stepDuration) {
@@ -241,7 +250,7 @@ const htmlContent = `<!DOCTYPE html>
 
         ctx.fillStyle = '#34D399';
         ctx.font = 'bold 15px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto';
-        const badgeLabel = currentData.step === 0 ? 'Why SUZARCHI' : ('Step ' + currentData.step + ' / 8');
+        const badgeLabel = currentData.step === 0 ? 'Why SUZARCHI' : (currentData.step === 9 ? 'Thank You' : ('Step ' + currentData.step + ' / 8'));
         ctx.fillText(badgeLabel + '  •  ' + timeStr, 1715, 1044);
 
         requestAnimationFrame(drawFrame);
@@ -294,10 +303,16 @@ async function main() {
           const stats = fs.statSync(OUTPUT_VIDEO_MP4);
           console.log(`\n[OK] Genuine H.264 / AAC MP4 saved: ${OUTPUT_VIDEO_MP4} (${stats.size} bytes)`);
 
+          // Also save to aligned output path
+          fs.copyFileSync(OUTPUT_VIDEO_MP4, OUTPUT_VIDEO_ALIGNED);
+          console.log(`[OK] Saved aligned MP4 copy: ${OUTPUT_VIDEO_ALIGNED}`);
+
           // Also copy to artifact directory for one-click access
           const artifactVideoMp4 = path.join(ARTIFACT_DIR, 'SUZARCHI_Meta_Hackathon_Final_Demo.mp4');
           fs.copyFileSync(OUTPUT_VIDEO_MP4, artifactVideoMp4);
-          console.log(`[OK] Copied genuine MP4 to artifact directory: ${artifactVideoMp4}`);
+          const artifactAlignedMp4 = path.join(ARTIFACT_DIR, 'SUZARCHI_Meta_Hackathon_Aligned_Demo.mp4');
+          fs.copyFileSync(OUTPUT_VIDEO_MP4, artifactAlignedMp4);
+          console.log(`[OK] Copied genuine MP4 to artifact directory: ${artifactVideoMp4} & ${artifactAlignedMp4}`);
 
           // Copy audio files and pronunciation test to artifact directory
           const artifactAudioDir = path.join(ARTIFACT_DIR, 'audio');

@@ -163,7 +163,7 @@ export interface StructuredPassportExtractionResult {
   // Contamination & Foreign Object Audit
   contaminationAssessment: ExtractedFieldCandidate<'CLEAN_VIRGIN' | 'SURPLUS_DUST' | 'OIL_HYDROCARBON' | 'FOREIGN_POLYMERS' | 'UNKNOWN'>;
   metalHardwareDetected: ExtractedFieldCandidate<boolean>;
-  isControlledOrHazardous: ExtractedFieldCandidate<boolean>;
+  isControlledOrHazardous: ExtractedFieldCandidate<boolean | null>;
   
   // Recommended Mandatory Laboratory Tests
   mandatoryLabAudits: string[];

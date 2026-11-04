@@ -88,9 +88,9 @@ export function DemoWalkthroughTour({
       titleTa: '1. உபரி மூலப்பொருள் கண்டறிதல்',
       badge: 'Active Lot mat-001',
       descriptionEn:
-        'Inspect genuine textile surplus: 300 kg active warehouse lot of Navy Cotton-Rich Single Jersey Knit Fabric (batch PCB-2026-IN-42, mat-001) from Tiruppur knitting mills, part of a 2,400 kg facility batch allocation. View verified origin and reported fiber blend awaiting chemical confirmation.',
+        'Inspect genuine textile surplus: 300 kg active warehouse lot of Pink Ribbed Corduroy Fabric (batch PCB-2026-IN-42, mat-001) from Tiruppur garment mills, part of a 2,400 kg facility batch allocation. View verified origin and reported 100% cotton fiber blend awaiting laboratory chemical confirmation.',
       descriptionTa:
-        'திருப்பூர் பின்னலாடை ஆலைகளிலிருந்து 300 கிலோ நேவி காட்டன்-ரிச் பின்னல் துணி உபரியை (தொகுதி PCB-2026-IN-42, mat-001) பார்வையிடுங்கள். இருப்பு, வடிவம் மற்றும் அறிவிக்கப்பட்ட கலவை விவரங்களை அறியுங்கள்.',
+        'திருப்பூர் ஆலைகளிலிருந்து 300 கிலோ இளஞ்சிவப்பு கோடுள்ள கார்டுராய் துணி உபரியை (தொகுதி PCB-2026-IN-42, mat-001) பார்வையிடுங்கள். இருப்பு, வடிவம் மற்றும் அறிவிக்கப்பட்ட கலவை விவரங்களை அறியுங்கள்.',
       targetView: 'dashboard',
       icon: Layers,
       actionButtonLabelEn: 'Inspect Listing (mat-001)',

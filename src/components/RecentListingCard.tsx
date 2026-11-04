@@ -240,7 +240,11 @@ export function RecentListingCard({ passport, onOpenEditModal, onSelectPrimaryIm
             <div>
               <div className="flex flex-wrap items-center gap-2">
                 <h2 className="text-base font-extrabold tracking-tight text-gray-900 sm:text-lg">
-                  {passport.id === 'mat-001' ? '300 kg Navy Single Jersey Knit Fabric' : passport.materialName.value}
+                  {passport.id === 'mat-001-navy'
+                    ? '300 kg Navy Single Jersey Knit Fabric'
+                    : (passport.id === 'mat-001'
+                      ? '300 kg Pink Ribbed Corduroy Fabric'
+                      : passport.materialName.value)}
                 </h2>
                 <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[9.5px] font-bold text-white shadow-2xs ${
                   passport.isControlledOrHazardous ? 'bg-rose-600' : 'bg-[#10B981]'
@@ -251,9 +255,11 @@ export function RecentListingCard({ passport, onOpenEditModal, onSelectPrimaryIm
               </div>
 
               <p className="mt-1 text-xs text-gray-600 font-medium leading-relaxed">
-                {passport.id === 'mat-001'
+                {passport.id === 'mat-001-navy'
                   ? 'Batch PCB-2026-IN-42 • Tiruppur Knitting Mills • 100% Cotton-rich surplus knit roll awaiting ISO 1833 chemical verification'
-                  : (passport.notes || `${passport.materialType.value} • ${passport.fibreComposition.value} • ${passport.condition.value}`)}
+                  : (passport.id === 'mat-001'
+                    ? 'Batch PCB-2026-IN-42 • Tiruppur Textile Cluster • Reported 100% Cotton surplus corduroy awaiting laboratory verification'
+                    : (passport.notes || `${passport.materialType.value} • ${passport.fibreComposition.value} • ${passport.condition.value}`))}
               </p>
 
               {/* Meta Chips */}
