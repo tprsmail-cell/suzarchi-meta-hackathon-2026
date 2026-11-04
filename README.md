@@ -48,11 +48,42 @@ This repository is dedicated to work developed for the Meta Global AI Developer 
 
 SUZARCHI is a separate, long-term product initiative. Existing planning documents and approved visual concepts remain unchanged. Any pre-existing concepts, assets, or code used in the submission will be identified transparently, and newly developed hackathon contributions will be clearly documented.
 
-## Current Status
+## Current Status & Implemented Architecture
 
-**Stage:** Project setup and requirements validation.
+**Milestone:** Final Release & Verified Hackathon Implementation
 
-No application functionality is claimed to be implemented yet.
+The repository implements a fully functional Next.js 14 web application:
+- **Material Discovery & Origin:** Verified 300 kg lot (`mat-001`) from Tiruppur, Tamil Nadu.
+- **AI-Assisted Intake (Meta Model API):** Server-side proxy (`/api/meta-ai/extract`) targeting `https://api.meta.ai/v1/chat/completions` using Bearer authentication and domain-tuned prompts. Transmits descriptive text metadata only with zero photographic bytes uploaded. Operates with local deterministic fallback when unconfigured, protecting user privacy and enforcing a strict $5 testing budget ceiling.
+- **Material Passport:** Aligned with EU Digital Product Passport (DPP) data syntax and 4-tier evidence status governance (`CONFIRMED`, `REPORTED`, `ESTIMATED`, `UNKNOWN`).
+- **4D Circular Compatibility:** Evaluates 11 destination families across 4 decision dimensions (Technical, Safety, Evidence, Commercial) with deterministic hard gates blocking hazardous pathways.
+- **Simulated Laboratory Verification Desk:** Demonstrates educational review workflow modelled on ISO/IEC 17025 parameters; maintains unverified claims as `REPORTED` with SHA-256 audit logging.
+- **Global Analytics & Regional Circular Intelligence:** Interactive 6-continent intelligence covering 17 circular hubs and Basel Convention non-hazardous trade corridor models.
+- **B2B RFQ Trade Desk:** In-memory local RFQ drafting without external dispatch.
+- **Scope 3 GHG Accounting:** Modelled cradle-to-gate calculations based on GHG Protocol standards (19.8 tCO₂e avoided and 108,000 L water saved for the 2,400 kg facility allocation).
+
+## Getting Started
+
+### Prerequisites
+- Node.js 18+ (tested on Node v20 LTS)
+- npm or pnpm
+
+### Installation & Execution
+```bash
+# Install dependencies
+npm install
+
+# Build production bundle
+npm run build
+
+# Start production server
+npm start
+```
+Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+### Demonstration Modes
+- **Clean Dashboard Mode:** Visit `http://localhost:3000/` to explore the clean production interface.
+- **Presenter Walkthrough Mode:** Visit `http://localhost:3000/?demo=true` to activate the guided 8-step interactive tour and recording controls.
 
 ## License
 
