@@ -3,13 +3,13 @@
     "id": 1,
     "name": "Meta adapter configuration validation",
     "passed": true,
-    "details": "Verified placeholders: META_AI_BASE_URL, META_AI_MODEL (muse-spark-1.1), META_AI_MAX_SPEND_USD, META_AI_ENABLED"
+    "details": "Verified placeholders: META_AI_BASE_URL, META_AI_MODEL (muse-spark-1.3 / muse-spark-1.1), META_AI_MAX_SPEND_USD, META_AI_ENABLED"
   },
   {
     "id": 2,
     "name": "Mocked successful response parsing",
     "passed": true,
-    "details": "Status: 200, Model: muse-spark-1.1, Source: REMOTE_META_AI"
+    "details": "Status: 200, Model: muse-spark-1.3, Source: REMOTE_META_AI"
   },
   {
     "id": 3,

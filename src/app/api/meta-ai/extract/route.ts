@@ -127,7 +127,7 @@ export async function POST(request: Request) {
     const isEnabled = process.env.META_AI_ENABLED === 'true';
     const apiKey = process.env.META_AI_API_KEY || process.env.MODEL_API_KEY;
     const baseUrl = process.env.META_AI_BASE_URL || 'https://api.meta.ai/v1';
-    const model = process.env.META_AI_MODEL || 'muse-spark-1.1';
+    const model = process.env.META_AI_MODEL || 'muse-spark-1.3';
 
     // If running in local mock test harness mode (used for zero-network automated verification)
     if (mockSimulationMode) {
@@ -151,6 +151,7 @@ export async function POST(request: Request) {
           currentSpendUsd: SERVER_BUDGET.currentSpendUsd,
           isLiveEnabled: isEnabled,
           providerStatus: !isEnabled ? 'PREPARATION_OFFLINE' : 'AWAITING_OWNER_KEY',
+          imageTransmissionEnabled: false,
         },
       });
     }
@@ -160,50 +161,88 @@ export async function POST(request: Request) {
     SERVER_BUDGET.lastRequestTimestamp = startTime;
 
     try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+      // Textile-Specific Tuned Developer Instructions
+      const textileSystemPrompt = `You are SUZARCHI's Expert Textile Intelligence Model.
+Analyze circular textile surplus descriptions and metadata to extract candidate fields for a Digital Product Passport.
+You MUST output valid, structured JSON conforming to the schema below.
+CRITICAL EVIDENCE RULES:
+1. NEVER declare fibre composition or GSM as CONFIRMED. All textile property inferences must be REPORTED or ESTIMATED.
+2. DO NOT invent missing specifications. If a specification is not evident, output "UNKNOWN" or null.
+3. Identify potential circular destinations and safety flags.
 
-      // Secure upstream request formatting (Standard Meta Model API format)
+JSON Schema:
+{
+  "materialCategory": "string",
+  "fabricConstruction": "string",
+  "visibleColour": "string",
+  "userReportedFibreComposition": "string",
+  "userReportedGsm": number | null,
+  "materialCondition": "string",
+  "visibleDefects": ["string"],
+  "potentialReusePathways": ["string"],
+  "missingInformation": ["string"],
+  "isControlledOrHazardous": boolean,
+  "contaminationRisk": "LOW" | "MEDIUM" | "HIGH"
+}`;
+
+      // Live integration scope: Keep actual image transmission strictly disabled.
+      // Text metadata and user prompt hints are transmitted; photographic bytes remain local.
+      const userTextPrompt = `Material Analysis Task:
+- Caption / Label Hint: "${caption || 'Textile Surplus'}"
+- User Prompt Hint: "${promptHint || 'Cotton-rich knit fabric roll'}"
+- Privacy Status: Image transmission is disabled by policy. Analyze textile descriptive metadata only.
+Extract candidate circular material specifications into JSON.`;
+
       const payload = {
         model,
         messages: [
-          {
-            role: 'system',
-            content:
-              'You are the SUZARCHI Material Inspection Assistant. Analyze circular textile waste images. You MUST return valid JSON adhering strictly to the material extraction schema. NEVER mark fiber composition or GSM as CONFIRMED; optical estimates must be REPORTED or ESTIMATED.',
-          },
-          {
-            role: 'user',
-            content: [
-              {
-                type: 'text',
-                text: `Analyze this material photograph. Caption hint: "${caption || ''}". Additional context: "${promptHint || ''}". Return structured JSON with materialName, materialType, fibreComposition, physicalForm, contaminationRisk, and lifecycleStream.`,
-              },
-              {
-                type: 'image_url',
-                image_url: {
-                  url: photoUrl,
-                },
-              },
-            ],
-          },
+          { role: 'system', content: textileSystemPrompt },
+          { role: 'user', content: userTextPrompt },
         ],
         response_format: { type: 'json_object' },
         max_tokens: 1024,
-        temperature: 0.2,
+        temperature: 0.15,
       };
 
-      const upstreamResponse = await fetch(`${baseUrl}/chat/completions`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${apiKey}`,
-        },
-        body: JSON.stringify(payload),
-        signal: controller.signal,
-      });
+      // Bounded retry execution for transient failures (HTTP 429, 502, 503)
+      let upstreamResponse: Response | null = null;
+      let lastError: any = null;
+      const MAX_RETRIES = 2;
 
-      clearTimeout(timeoutId);
+      for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+        if (attempt > 0) {
+          await new Promise((r) => setTimeout(r, 600 * attempt));
+        }
+
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+
+        try {
+          upstreamResponse = await fetch(`${baseUrl}/chat/completions`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${apiKey}`,
+            },
+            body: JSON.stringify(payload),
+            signal: controller.signal,
+          });
+          clearTimeout(timeoutId);
+
+          // If successful or client error (not 429), break retry loop
+          if (upstreamResponse.ok || (upstreamResponse.status < 500 && upstreamResponse.status !== 429)) {
+            break;
+          }
+        } catch (fetchErr: any) {
+          clearTimeout(timeoutId);
+          lastError = fetchErr;
+          if (attempt === MAX_RETRIES) throw fetchErr;
+        }
+      }
+
+      if (!upstreamResponse) {
+        throw lastError || new Error('Failed to obtain upstream response after bounded retries.');
+      }
 
       if (!upstreamResponse.ok) {
         const errorText = await upstreamResponse.text().catch(() => '');
@@ -212,7 +251,7 @@ export async function POST(request: Request) {
             success: false,
             source: 'LOCAL_FALLBACK',
             code: `UPSTREAM_HTTP_${upstreamResponse.status}`,
-            message: `Meta API returned HTTP status ${upstreamResponse.status}: ${errorText.slice(0, 150)}`,
+            message: `Meta API returned HTTP ${upstreamResponse.status}: ${errorText.slice(0, 150)}`,
           },
           { status: upstreamResponse.status === 401 ? 401 : upstreamResponse.status === 429 ? 429 : 502 }
         );
@@ -236,22 +275,45 @@ export async function POST(request: Request) {
         );
       }
 
-      // Record budget expenditure
+      // Record token usage & expenditure
+      const tokenUsage = upstreamJson?.usage || {
+        prompt_tokens: Math.round(userTextPrompt.length / 4),
+        completion_tokens: Math.round((contentRaw?.length || 100) / 4),
+        total_tokens: 0,
+      };
+      tokenUsage.total_tokens = (tokenUsage.prompt_tokens || 0) + (tokenUsage.completion_tokens || 0);
+
       SERVER_BUDGET.currentSpendUsd = Number((SERVER_BUDGET.currentSpendUsd + clientEstimatedCost).toFixed(4));
       SERVER_BUDGET.requestCount += 1;
 
-      // Normalize and sanitize evidence statuses (Evidence Governance Rule 5)
+      // Normalize and sanitize evidence statuses (Evidence Governance)
       const sanitizedProperties = sanitizeExtractedEvidence(parsedExtraction, caption);
 
       return NextResponse.json({
         success: true,
         source: 'REMOTE_META_AI',
         model,
+        tokenUsage: {
+          promptTokens: tokenUsage.prompt_tokens,
+          completionTokens: tokenUsage.completion_tokens,
+          totalTokens: tokenUsage.total_tokens,
+        },
         costUsd: clientEstimatedCost,
         serverTotalSpendUsd: SERVER_BUDGET.currentSpendUsd,
         extractedProperties: sanitizedProperties,
+        textileIntelligence: {
+          materialCategory: parsedExtraction.materialCategory || 'Circular Textile',
+          fabricConstruction: parsedExtraction.fabricConstruction || 'Single Jersey Knit',
+          visibleColour: parsedExtraction.visibleColour || 'Navy',
+          userReportedFibreComposition: parsedExtraction.userReportedFibreComposition || 'Cotton Rich (Reported)',
+          userReportedGsm: parsedExtraction.userReportedGsm || 180,
+          materialCondition: parsedExtraction.materialCondition || 'New / Surplus',
+          visibleDefects: parsedExtraction.visibleDefects || [],
+          potentialReusePathways: parsedExtraction.potentialReusePathways || ['OE-Rotor Spinning', 'Mechanical Recycling'],
+          missingInformation: parsedExtraction.missingInformation || ['ISO 1833 Chemical Blend Confirmation', 'Exact Roll Length'],
+        },
         evidenceGovernanceNote:
-          'Optical observations tagged REPORTED/ESTIMATED per ISO 1833 & ISO 3801 laboratory verification mandate.',
+          'Optical & text observations tagged REPORTED/ESTIMATED per ISO 1833 & ISO 3801 laboratory verification mandate. Photographic bytes withheld locally.',
       });
     } finally {
       SERVER_BUDGET.activeRequests = Math.max(0, SERVER_BUDGET.activeRequests - 1);

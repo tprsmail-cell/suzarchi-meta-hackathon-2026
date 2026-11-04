@@ -74,7 +74,7 @@ async function runLocalMockSuite() {
   try {
     const routeFile = fs.readFileSync('src/app/api/meta-ai/extract/route.ts', 'utf8');
     const hasBaseUrl = routeFile.includes('https://api.meta.ai/v1');
-    const hasModelSpark = routeFile.includes('muse-spark-1.1');
+    const hasModelSpark = routeFile.includes('muse-spark-1.3') || routeFile.includes('muse-spark-1.1');
     const hasMaxBudget = routeFile.includes('META_AI_MAX_SPEND_USD');
     const hasEnabledFlag = routeFile.includes('META_AI_ENABLED');
 
@@ -83,7 +83,7 @@ async function runLocalMockSuite() {
       1,
       'Meta adapter configuration validation',
       configValid,
-      'Verified placeholders: META_AI_BASE_URL, META_AI_MODEL (muse-spark-1.1), META_AI_MAX_SPEND_USD, META_AI_ENABLED'
+      'Verified placeholders: META_AI_BASE_URL, META_AI_MODEL (muse-spark-1.3 / muse-spark-1.1), META_AI_MAX_SPEND_USD, META_AI_ENABLED'
     );
   } catch (err) {
     recordTest(1, 'Meta adapter configuration validation', false, err.message);

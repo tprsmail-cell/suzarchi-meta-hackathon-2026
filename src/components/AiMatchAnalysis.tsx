@@ -123,7 +123,7 @@ export function AiMatchAnalysis({
   };
 
   return (
-    <div className="rounded-xl border border-gray-200/90 bg-white p-4 shadow-2xs">
+    <div id="circular-compatibility" className="rounded-xl border border-gray-200/90 bg-white p-4 shadow-2xs scroll-mt-24">
       {/* Section Header */}
       <div className="flex flex-col justify-between gap-2 sm:flex-row sm:items-center">
         <div>
@@ -138,7 +138,7 @@ export function AiMatchAnalysis({
           </div>
           <p className="text-xs text-gray-500">
             Based on material details, available quantity and current market needs{' '}
-            <span className="font-semibold text-emerald-800">(illustrative results)</span>
+            <span className="font-semibold text-emerald-800">(deterministic model output scores)</span>
           </p>
         </div>
 

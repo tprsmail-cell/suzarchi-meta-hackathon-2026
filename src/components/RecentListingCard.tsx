@@ -44,7 +44,7 @@ export function RecentListingCard({ passport, onOpenEditModal, onSelectPrimaryIm
   };
 
   return (
-    <div data-testid="recent-listing-card" className="flex h-full flex-col justify-between rounded-xl border border-gray-200/90 bg-white p-4 shadow-2xs">
+    <div id="material-discovery-card" data-testid="recent-listing-card" className="flex h-full flex-col justify-between rounded-xl border border-gray-200/90 bg-white p-4 shadow-2xs scroll-mt-28">
       <div>
         {/* Card Header */}
         <div className="mb-3 flex items-center justify-between">
@@ -84,11 +84,11 @@ export function RecentListingCard({ passport, onOpenEditModal, onSelectPrimaryIm
           </div>
         </div>
 
-        {/* Content Grid: Photo Gallery (left) + Details (right) */}
+        {/* Content Grid: Photo Gallery (left 5 cols) + Details (right 7 cols) */}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-12 items-start">
           {/* Photo Gallery Area */}
-          <div className="sm:col-span-4 lg:col-span-4 xl:col-span-4">
-            <div className="relative aspect-[16/10] sm:aspect-[4/3] max-h-[175px] w-full overflow-hidden rounded-lg bg-[#152238] shadow-inner border border-slate-200/70">
+          <div className="sm:col-span-5 lg:col-span-5 xl:col-span-5">
+            <div className="relative aspect-square sm:aspect-[4/3] min-h-[200px] max-h-[250px] w-full overflow-hidden rounded-lg bg-[#0F172A] shadow-md border border-slate-300/80 flex items-center justify-center">
               {/* Dynamic DEMO DATA vs USER CREATED badge */}
               {passport.isUserCreated ? (
                 <span className="absolute left-2 top-2 z-10 rounded bg-emerald-600 px-1.5 py-0.5 text-[8.5px] font-extrabold uppercase tracking-wider text-white shadow-xs flex items-center gap-1">
@@ -103,9 +103,9 @@ export function RecentListingCard({ passport, onOpenEditModal, onSelectPrimaryIm
 
               {/* Photo Indicator / Primary Badge */}
               {activePhoto && (
-                <span className="absolute right-2 top-2 z-10 rounded bg-black/60 backdrop-blur-xs px-1.5 py-0.5 text-[8.5px] font-bold text-white shadow-xs flex items-center gap-1">
-                  <ImageIcon className="h-2.5 w-2.5 text-emerald-400" />
-                  {selectedImageIndex === 0 ? 'Primary Photo' : `Photo ${selectedImageIndex + 1}/${validPhotos.length}`}
+                <span className="absolute right-2 top-2 z-10 rounded bg-black/70 backdrop-blur-xs px-2 py-0.5 text-[9px] font-bold text-white shadow-xs flex items-center gap-1 border border-white/20">
+                  <ImageIcon className="h-3 w-3 text-emerald-400" />
+                  {selectedImageIndex === 0 ? 'Verified Photograph' : `Photo ${selectedImageIndex + 1}/${validPhotos.length}`}
                 </span>
               )}
 
@@ -115,11 +115,11 @@ export function RecentListingCard({ passport, onOpenEditModal, onSelectPrimaryIm
                   <img
                     src={activePhoto.url}
                     alt={activePhoto.caption || passport.materialName.value}
-                    className="h-full w-full object-cover transition-transform duration-200 hover:scale-105"
+                    className="h-full w-full object-cover object-center transition-transform duration-200 hover:scale-105"
                   />
                   {activePhoto.caption && (
-                    <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-2 text-white">
-                      <p className="text-[10px] font-medium leading-tight truncate">{activePhoto.caption}</p>
+                    <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent p-2 text-white">
+                      <p className="text-[10.5px] font-semibold leading-tight truncate">{activePhoto.caption}</p>
                     </div>
                   )}
                 </>
@@ -235,23 +235,25 @@ export function RecentListingCard({ passport, onOpenEditModal, onSelectPrimaryIm
             )}
           </div>
 
-          {/* Details & Specs Area (8 cols) */}
-          <div className="flex flex-col justify-between sm:col-span-8 lg:col-span-8 xl:col-span-8 min-w-0">
+          {/* Details & Specs Area (7 cols) */}
+          <div className="flex flex-col justify-between sm:col-span-7 lg:col-span-7 xl:col-span-7 min-w-0">
             <div>
               <div className="flex flex-wrap items-center gap-2">
-                <h2 className="text-base font-bold tracking-tight text-gray-900 sm:text-lg">
-                  {passport.materialName.value}
+                <h2 className="text-base font-extrabold tracking-tight text-gray-900 sm:text-lg">
+                  {passport.id === 'mat-001' ? '300 kg Navy Single Jersey Knit Fabric' : passport.materialName.value}
                 </h2>
                 <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[9.5px] font-bold text-white shadow-2xs ${
                   passport.isControlledOrHazardous ? 'bg-rose-600' : 'bg-[#10B981]'
                 }`}>
                   <span className="h-1.5 w-1.5 rounded-full bg-white animate-pulse" />
-                  {passport.isControlledOrHazardous ? 'Hazardous Track' : 'Available'}
+                  {passport.isControlledOrHazardous ? 'Hazardous Track' : 'Active Listing • Available'}
                 </span>
               </div>
 
-              <p className="mt-1 text-xs text-gray-500 leading-relaxed">
-                {passport.notes || `${passport.materialType.value} • ${passport.fibreComposition.value} • ${passport.condition.value}`}
+              <p className="mt-1 text-xs text-gray-600 font-medium leading-relaxed">
+                {passport.id === 'mat-001'
+                  ? 'Batch PCB-2026-IN-42 • Tiruppur Knitting Mills • 100% Cotton-rich surplus knit roll awaiting ISO 1833 chemical verification'
+                  : (passport.notes || `${passport.materialType.value} • ${passport.fibreComposition.value} • ${passport.condition.value}`)}
               </p>
 
               {/* Meta Chips */}

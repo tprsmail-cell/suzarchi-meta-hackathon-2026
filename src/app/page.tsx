@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { MaterialPassport, MaterialPhoto } from '@/types/passport';
 import { ALL_SAMPLE_CASES } from '@/data/sampleCases';
 import { evaluateReuseDestinations } from '@/lib/rules';
@@ -56,6 +56,15 @@ export default function DashboardPage() {
   // Navigation & View Routing State
   const [activeNavView, setActiveNavView] = useState<NavViewType>('dashboard');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isDemoMode, setIsDemoMode] = useState(false);
+
+  // Initialize Demo Mode from URL parameter (?demo=true)
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      setIsDemoMode(params.get('demo') === 'true');
+    }
+  }, []);
 
   // Modal Dialog States
   const [isPostModalOpen, setIsPostModalOpen] = useState(false);
@@ -265,16 +274,60 @@ export default function DashboardPage() {
         )}
 
         <main className="flex-1 w-full p-4 sm:p-5 lg:p-6 space-y-4">
-          {/* Interactive Hackathon Demonstration Tour (8-Step Circular Journey) */}
-          <DemoWalkthroughTour
-            onSelectMaterial={(id) => setSelectedMaterialId(id)}
-            onOpenAiIntake={() => handleOpenAiIntake()}
-            onOpenPassportDetail={() => setIsDetailModalOpen(true)}
-            onOpenRfqModal={(title) => handleOpenRfq(title)}
-            onNavigateToView={(view) => setActiveNavView(view)}
-            activePassport={activePassport}
-            activeNavView={activeNavView}
-          />
+          {/* Interactive Hackathon Demonstration Tour (Only rendered in demo mode: /?demo=true) */}
+          {isDemoMode && (
+            <DemoWalkthroughTour
+              onSelectMaterial={(id) => {
+                setIsDetailModalOpen(false);
+                setIsAiIntakeModalOpen(false);
+                setIsRfqModalOpen(false);
+                setIsImpactModalOpen(false);
+                setSelectedMaterialId(id);
+                setActiveNavView('dashboard');
+              }}
+              onOpenAiIntake={() => {
+                setIsDetailModalOpen(false);
+                setIsRfqModalOpen(false);
+                setIsImpactModalOpen(false);
+                handleOpenAiIntake(
+                  [
+                    {
+                      id: 'photo-navy-demo',
+                      url: '/assets/navy-single-jersey-fabric.jpg',
+                      name: 'navy-single-jersey-fabric.jpg',
+                      sizeBytes: 89918,
+                      caption: 'Navy Fabric Roll with Draped Fabric Sample',
+                      mediaType: 'OVERVIEW',
+                      isPrimary: true,
+                    },
+                  ],
+                  'navy single jersey cotton knit',
+                  'mat-001'
+                );
+              }}
+              onOpenPassportDetail={() => {
+                setIsAiIntakeModalOpen(false);
+                setIsRfqModalOpen(false);
+                setIsImpactModalOpen(false);
+                setIsDetailModalOpen(true);
+              }}
+              onOpenRfqModal={(title) => {
+                setIsAiIntakeModalOpen(false);
+                setIsDetailModalOpen(false);
+                setIsImpactModalOpen(false);
+                handleOpenRfq(title);
+              }}
+              onNavigateToView={(view) => {
+                setIsAiIntakeModalOpen(false);
+                setIsDetailModalOpen(false);
+                setIsRfqModalOpen(false);
+                setIsImpactModalOpen(false);
+                setActiveNavView(view);
+              }}
+              activePassport={activePassport}
+              activeNavView={activeNavView}
+            />
+          )}
 
           {/* VIEW 1: Primary Main Dashboard */}
           {activeNavView === 'dashboard' && (

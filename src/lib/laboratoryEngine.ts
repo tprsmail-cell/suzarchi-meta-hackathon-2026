@@ -128,11 +128,11 @@ export function promotePropertyWithLabReport(
   const prevStatus: EvidenceStatus = prevRecord?.status || 'UNKNOWN';
   const prevValue = prevRecord?.value ?? 'Unspecified';
 
-  // 5. Build Updated Property Record with Status CONFIRMED
+  // 5. Build Updated Property Record with Simulated Review Status (Honest Governance: Do NOT promote to CONFIRMED on simulated fixtures)
   const promotedProperty: PropertyRecord<any> = {
     value: resultItem.measuredValue,
-    status: 'CONFIRMED',
-    sourceNote: `Confirmed by ${report.laboratoryName} (${report.accreditationReference}), Report #${report.reportNumber}. Method: ${resultItem.testMethod}. ${resultItem.uncertaintyMargin ? 'Margin: ' + resultItem.uncertaintyMargin : ''}`.trim(),
+    status: 'REPORTED', // Honest integrity: simulated demo reports keep property at REPORTED
+    sourceNote: `Simulated laboratory verification review (Modelled on ${report.laboratoryName}, Report #${report.reportNumber}, Method: ${resultItem.testMethod}). Requires genuine physical laboratory accreditation for official confirmation.`.trim(),
   };
 
   // 6. Build Immutable Audit Record
@@ -142,13 +142,13 @@ export function promotePropertyWithLabReport(
     materialPassportId: passport.id,
     propertyKey,
     previousStatus: prevStatus,
-    promotedStatus: 'CONFIRMED',
+    promotedStatus: 'REPORTED',
     previousValue: prevValue,
     confirmedValue: resultItem.measuredValue,
     promotedByAuditor: auditorName,
     promotionTimestamp: new Date().toISOString(),
-    laboratoryStandardReference: `${report.laboratoryName} [${report.accreditationReference}] — ${resultItem.testMethod}`,
-    auditRationale: `Promoted from ${prevStatus} to CONFIRMED based on accredited laboratory analysis complying with ISO/IEC 17025. ${report.overallConclusion}`,
+    laboratoryStandardReference: `${report.laboratoryName} [${report.accreditationReference}] — ${resultItem.testMethod} (Simulated Demonstration Protocol)`,
+    auditRationale: `Simulated demonstration test review logged for ${propertyKey}. Property maintained as REPORTED pending genuine ISO/IEC 17025 physical lab testing.`,
   };
 
   // 7. Clone and return updated Passport
@@ -159,7 +159,7 @@ export function promotePropertyWithLabReport(
 
   return {
     success: true,
-    message: `Property "${propertyKey}" successfully promoted to CONFIRMED under ${report.accreditationReference}.`,
+    message: `Simulated demonstration test review logged for "${propertyKey}". Property maintained as REPORTED pending genuine ISO/IEC 17025 physical testing.`,
     updatedPassport,
     auditRecord,
   };

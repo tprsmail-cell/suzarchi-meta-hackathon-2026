@@ -77,7 +77,7 @@ export interface EvidencePromotionAuditRecord {
   materialPassportId: string;
   propertyKey: string;
   previousStatus: EvidenceStatus;
-  promotedStatus: 'CONFIRMED';
+  promotedStatus: EvidenceStatus;
   previousValue: any;
   confirmedValue: any;
   promotedByAuditor: string;

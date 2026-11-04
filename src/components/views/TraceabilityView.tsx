@@ -90,7 +90,7 @@ export function TraceabilityView({
         onUpdatePassport(result.updatedPassport);
       }
       setAuditLogs((prev) => [result.auditRecord!, ...prev]);
-      setPromotionToast(`Successfully promoted "${propertyKey}" to CONFIRMED under ${report.accreditationReference}!`);
+      setPromotionToast(result.message);
       setTimeout(() => setPromotionToast(null), 5000);
     } else {
       setPromotionToast(result.message);
@@ -263,21 +263,21 @@ export function TraceabilityView({
       </div>
 
       {/* ISO/IEC 17025 LABORATORY VERIFICATION & EVIDENCE PROMOTION DRAWER */}
-      <div className="rounded-2xl border border-emerald-200 bg-white p-5 sm:p-6 shadow-xs">
+      <div id="laboratory-verification-desk" className="rounded-2xl border border-emerald-200 bg-white p-5 sm:p-6 shadow-xs">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-gray-100">
           <div>
             <div className="flex items-center gap-2">
               <ShieldCheck className="h-5 w-5 text-emerald-700" />
               <h2 className="text-base font-bold text-gray-900">
-                Accredited Laboratory Evidence Promotion Desk
+                Simulated Laboratory Evidence Review Desk (Demonstration Workflow)
               </h2>
             </div>
             <p className="text-xs text-gray-500 mt-0.5">
-              Verify test certificates from accredited ISO/IEC 17025 institutes (SITRA, Hohenstein, Intertek) and promote properties from REPORTED to CONFIRMED.
+              Educational demonstration workflow modelled on ISO/IEC 17025 test parameters. Real physical verification requires accredited testing institutes (SITRA, Hohenstein, Intertek); demo records log simulation audit trails.
             </p>
           </div>
-          <span className="rounded-lg bg-emerald-50 border border-emerald-200 px-3 py-1 text-xs font-semibold text-emerald-900">
-            {reports.length} Verified Lab Reports On Record
+          <span className="rounded-lg bg-amber-50 border border-amber-200 px-3 py-1 text-xs font-semibold text-amber-900">
+            Demonstration Fixture: {reports.length} Simulated Test Protocols
           </span>
         </div>
 
@@ -295,15 +295,15 @@ export function TraceabilityView({
                     <span className="text-[10px] font-mono font-bold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded">
                       {report.reportNumber}
                     </span>
-                    <span className="text-[10px] font-bold text-gray-500">
-                      {report.reportIssueDate}
+                    <span className="text-[9px] uppercase tracking-wider font-bold text-amber-700 bg-amber-100 px-1.5 py-0.5 rounded">
+                      SIMULATED TEST FIXTURE
                     </span>
                   </div>
                   <h4 className="text-xs font-bold text-gray-900 mt-2">
-                    {report.laboratoryName}
+                    {report.laboratoryName} (Simulated Model)
                   </h4>
                   <div className="text-[11px] text-gray-500">
-                    Accreditation: <span className="font-semibold text-gray-700">{report.accreditationReference}</span>
+                    Accreditation Model: <span className="font-semibold text-gray-700">{report.accreditationReference}</span>
                   </div>
                   <div className="text-[11px] text-gray-500">
                     Batch Reference: <span className="font-mono font-semibold text-gray-700">{report.batchId}</span> ({report.sampleIdentifier})
@@ -333,7 +333,7 @@ export function TraceabilityView({
                     className="w-full rounded-lg bg-emerald-800 hover:bg-emerald-900 px-3 py-1.5 text-xs font-bold text-white transition flex items-center justify-center gap-1.5 shadow-xs"
                   >
                     <CheckCircle2 className="h-3.5 w-3.5 text-emerald-300" />
-                    Promote Evidence to CONFIRMED
+                    Simulate Evidence Review & Log Audit Trail
                   </button>
                 </div>
               </div>
@@ -346,13 +346,13 @@ export function TraceabilityView({
           <div className="mt-5 rounded-xl border border-gray-200 bg-emerald-50/40 p-4 space-y-2">
             <h4 className="text-xs font-bold uppercase tracking-wider text-emerald-950 flex items-center gap-1.5">
               <Clock className="h-3.5 w-3.5 text-emerald-700" />
-              Immutable Audit Trail (ISO 17025 Promotion Records)
+              Simulated Audit Trail (Educational Demonstration Records)
             </h4>
             <div className="space-y-1.5">
               {auditLogs.map((log) => (
                 <div key={log.id} className="text-xs bg-white p-2.5 rounded-lg border border-emerald-200 flex items-center justify-between">
                   <div>
-                    <span className="font-bold text-gray-900">{log.propertyKey}</span> on <span className="font-mono text-emerald-800">{log.materialPassportId}</span> promoted from <span className="line-through text-gray-400">{log.previousStatus}</span> to <span className="font-bold text-emerald-700">CONFIRMED</span>: &quot;{log.confirmedValue}&quot;
+                    <span className="font-bold text-gray-900">{log.propertyKey}</span> on <span className="font-mono text-emerald-800">{log.materialPassportId}</span> reviewed: &quot;{log.confirmedValue}&quot; (Status maintained as <span className="font-bold text-amber-700">{log.promotedStatus}</span>)
                     <div className="text-[10px] text-gray-500 mt-0.5">{log.auditRationale}</div>
                   </div>
                   <span className="text-[10px] font-mono text-gray-400">{new Date(log.promotionTimestamp).toLocaleTimeString()}</span>

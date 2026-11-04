@@ -33,3 +33,9 @@ next-env.d.ts
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# Video and Audio artifacts - exclude from git to keep repository lightweight
+*.mp4
+*.webm
+*.wav
+docs/release/demo-recording-evidence/audio/
